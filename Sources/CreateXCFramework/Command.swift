@@ -26,7 +26,8 @@ struct Command: ParsableCommand {
             only Apple pplatforms are supported.
 
             Supported platforms: \(TargetPlatform.allCases.map({ $0.rawValue }).joined(separator: ", "))
-            """
+            """,
+        version: "1.0.1"
     )
     
     
