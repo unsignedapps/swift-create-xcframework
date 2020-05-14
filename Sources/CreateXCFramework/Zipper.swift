@@ -23,9 +23,9 @@ struct Zipper {
     
     // MARK: - Zippering
     
-    func zip (target: String, file: Foundation.URL) throws {
+    func zip (target: String, version: String?, file: Foundation.URL) throws {
         
-        let suffix = self.versionSuffix(target: target) ?? ""
+        let suffix = self.versionSuffix(target: target, default: version) ?? ""
         let zipPath = file.path.replacingOccurrences(of: "\\.xcframework$", with: "\(suffix).zip", options: .regularExpression)
         let zipURL = URL(fileURLWithPath: zipPath)
         
@@ -58,7 +58,7 @@ struct Zipper {
         ]
     }
     
-    private func versionSuffix (target: String) -> String? {
+    private func versionSuffix (target: String, default fallback: String?) -> String? {
         
         // find the package that contains our target
         guard let packageRef = self.package.graph.packages.first(where: { $0.targets.contains(where: { $0.name == target } ) }) else { return nil }
@@ -72,7 +72,7 @@ struct Zipper {
             case let .checkout(checkout) = dependency.state,
             let version = checkout.version
         else {
-            return nil
+            return fallback.flatMap { "-" + $0 }
         }
 
         return "-" + version.description

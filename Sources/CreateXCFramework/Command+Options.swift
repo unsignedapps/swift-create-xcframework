@@ -43,6 +43,9 @@ extension Command {
         @Flag(help: "Whether to wrap the .xcframework(s) up in a versioned zip file ready for deployment")
         var zip: Bool
         
+        @Option(help: ArgumentHelp("The version number to append to the name of the zip file\n\nIf the target you are packaging is a dependency, swift-create-xcframework will look into the package graph and locate the version number the dependency resolved to. As there is no standard way to specify the version inside your Swift Package, --zip-version lets you specify it manually.", valueName: "version"))
+        var zipVersion: String?
+ 
         
         // MARK: - Targets
         

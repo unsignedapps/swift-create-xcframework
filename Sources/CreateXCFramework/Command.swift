@@ -96,7 +96,7 @@ struct Command: ParsableCommand {
             let zipper = Zipper(package: package)
             try xcframeworkFiles
                 .forEach { pair in
-                    try zipper.zip(target: pair.0, file: pair.1)
+                    try zipper.zip(target: pair.0, version: self.options.zipVersion, file: pair.1)
                     try zipper.clean(file: pair.1)
                 }
         }
