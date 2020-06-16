@@ -1,0 +1,13 @@
+{
+    "name": "swift-create-xcframework-action",
+    "version": "1.0.0",
+    "description": "GitHub Action for swift-create-xcframework",
+    "main": "action.js",
+    "author": "Unsigned Apps",
+    "license": "MIT",
+    "homepage": "https://github.com/unsignedapps/swift-create-xcframework",
+    "dependencies": {
+      "@actions/core": "^1.1.1",
+      "@actions/exec": "^1.1.1"
+    }
+  }

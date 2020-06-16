@@ -1,0 +1,24 @@
+name: "swift-create-xcframework"
+description: "Creates XCFramework bundles for yout Swift Package"
+
+inputs:
+  target:
+    description: "The name of the target you want to create an XCFramework bundle for. Recommended if your Package.swift declares multiple library products"
+    required: false
+  platforms:
+    description: "The platform(s) that you want to build for. Default is to build for all platforms supported in your Package.swift, or all Apple platforms if omited."
+    required: false
+  version:
+    description: "A version number to use to tag the ZIP file with"
+    required: false
+  outputs:
+    xcframework:
+      description: "The path to the resulting XCFramework bundle ZIP file"
+
+runs:
+  using: node12
+  main: action.js
+
+branding:
+  icon: "package"
+  color: "green"
