@@ -46,6 +46,13 @@ struct Zipper {
         case let .signalled(signal: signal):
             throw XcodeBuilder.Error.signalExit(signal)
         }
+
+        // notify the action if we have one
+        if self.package.options.githubAction {
+            let data = Data(zipURL.path.utf8)
+            let url = Foundation.URL(fileURLWithPath: self.package.options.buildPath).appendingPathComponent("xcframework-zipfile.url")
+            try data.write(to: url)
+        }
     }
     
     private func zipCommand (source: Foundation.URL, target: Foundation.URL) -> [String] {
