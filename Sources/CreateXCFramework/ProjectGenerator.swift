@@ -40,7 +40,7 @@ struct ProjectGenerator {
             projectName: self.package.package.name,
             xcodeprojPath: path,
             graph: self.package.graph,
-            options: XcodeprojOptions(),
+            options: XcodeprojOptions(addExtraFiles: false),
             diagnostics: self.package.diagnostics
         )
     }
