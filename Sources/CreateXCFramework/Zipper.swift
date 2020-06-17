@@ -57,11 +57,12 @@ struct Zipper {
     
     private func zipCommand (source: Foundation.URL, target: Foundation.URL) -> [String] {
         return [
-            "zip",
-            "-r",
-            "-q",
-            target.path,
-            source.path
+            "ditto",
+            "-c",
+            "-k",
+            "--keepParent",
+            source.path,
+            target.path
         ]
     }
     
