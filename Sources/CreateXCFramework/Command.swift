@@ -27,7 +27,7 @@ struct Command: ParsableCommand {
 
             Supported platforms: \(TargetPlatform.allCases.map({ $0.rawValue }).joined(separator: ", "))
             """,
-        version: "1.0.4"
+        version: "1.0.5"
     )
     
     
@@ -105,11 +105,22 @@ struct Command: ParsableCommand {
         // zip it up if thats what they want
         if self.options.zip {
             let zipper = Zipper(package: package)
-            try xcframeworkFiles
-                .forEach { pair in
-                    try zipper.zip(target: pair.0, version: self.options.zipVersion, file: pair.1)
+            let zipped = try xcframeworkFiles
+                .map { pair -> Foundation.URL in
+                    let zip = try zipper.zip(target: pair.0, version: self.options.zipVersion, file: pair.1)
                     try zipper.clean(file: pair.1)
+
+                    return zip
                 }
+
+            // notify the action if we have one
+            if self.options.githubAction {
+                let zips = zipped.map({ $0.path }).joined(separator: "\n")
+                let data = Data(zips.utf8)
+                let url = Foundation.URL(fileURLWithPath: self.options.buildPath).appendingPathComponent("xcframework-zipfile.url")
+                try data.write(to: url)
+            }
+
         }
     }
 }

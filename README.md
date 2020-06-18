@@ -87,12 +87,49 @@ If the target you are creating an XCFramework happens to be a dependency, swift-
 
 If the target you are creating is a product from the root package, unfortunately there is no standard way to identify the version number. For those cases you can specify one with `--zip-version`.
 
+## GitHub Action
+
+swift-create-xcframework includes a GitHub Action that can kick off and automatically create an XCFramework when you tag a release in your project.
+
+The action produces one XCFramework artifact for every target specified.
+
+**Note:** You MUST use a macOS-based runner (such as `macos-latest`) as xcodebuild doesn't run on Linux.
+
+You can then take those artifacts and add them to your release.
+
+An incomplete example:
+
+### .github/workflows/create-release.yml
+
+```yaml
+name: Create Release
+
+# Create XCFramework when a version is tagged
+on:
+  push:
+    tags:
+
+jobs:
+  create_release:
+    name: Create Release
+    runs-on: macos-latest
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Create XCFramework
+        uses: unsignedapps/swift-create-xcframework@v1
+        
+      # Create a release
+      # Upload those artifacts to the release
+```
+
 ## Installation
 
 You can install using mint:
 
 ```shell
-mint install unsignedapps/swift-create-xcframework@1.0.0
+mint install unsignedapps/swift-create-xcframework@1.0.5
 ```
 
 Or manually:

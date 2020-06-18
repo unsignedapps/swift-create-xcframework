@@ -11,8 +11,8 @@ core.setCommandEcho(true)
 
 async function run () {
     try {
-        let path = core.getInput('path', { required: false })
-        let target = core.getInput('target', { required: false })
+        let packagePath = core.getInput('path', { required: false })
+        let targets = core.getInput('target', { required: false })
         let configuration = core.getInput('configuration', { required: false })
         let platforms = core.getInput('platforms', { required: false })
 
@@ -24,9 +24,9 @@ async function run () {
 
         // put together our options
         var options = [ '--zip', '--github-action' ]
-        if (!!path) {
+        if (!!packagePath) {
             options.push('--package-path')
-            options.push(path)
+            options.push(packagePath)
         }
 
         if (!!configuration) {
@@ -44,19 +44,28 @@ async function run () {
                 })
         }
 
-        if (!target) {
-            options.push(target)
+        if (!targets) {
+            targets
+                .split(',')
+                .map((t) => t.trim())
+                .filter((t) => t.length > 0)
+                .forEach((target) => {
+                    options.push(target)
+                })
         }
 
         await exec.exec('swift-create-xcframework', options)
 
-        let artifactName = target || path.basename(process.cwd())
-
-        let zip = fs.readFileSync(outputPath, { encoding: 'utf8' })
         let client = artifact.create()
-        await client.uploadArtifact(artifactName + '.zip', [ zip ], process.cwd())
-
-        core.warning("Yaaaaaa7: " + zip)
+        let files = fs.readFileSync(outputPath, { encoding: 'utf8' })
+            .split('\n')
+            .map((file) => file.trim())
+        
+        for (var i = 0, c = files.length; i < c; i++) {
+            let file = files[i]
+            let name = path.basename(file)
+            await client.uploadArtifact(name, [ file ], path.dirname(file))
+        }
 
     } catch (error) {
         core.setFailed(error)
