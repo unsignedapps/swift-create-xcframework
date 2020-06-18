@@ -25,6 +25,12 @@ struct PackageInfo {
             .appendingPathComponent("swift-create-xcframework")
             .absoluteURL
     }
+
+    var distributionBuildXcconfig: Foundation.URL {
+        return self.projectBuildDirectory
+            .appendingPathComponent("Distribution.xcconfig")
+            .absoluteURL
+    }
     
     // TODO: Map diagnostics to swift-log
     let diagnostics = DiagnosticsEngine()

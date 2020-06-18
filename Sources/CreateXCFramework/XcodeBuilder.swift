@@ -98,7 +98,6 @@ struct XcodeBuilder {
             "-project", self.path.pathString,
             "-configuration", self.options.configuration.xcodeConfigurationName,
             "-sdk", sdk.sdkName,
-            "BUILD_LIBRARY_FOR_DISTRIBUTION=YES",
             "BUILD_DIR=\(self.buildDirectory.path)"
         ]
         
