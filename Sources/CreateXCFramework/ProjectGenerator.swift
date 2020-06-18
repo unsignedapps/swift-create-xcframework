@@ -35,6 +35,7 @@ struct ProjectGenerator {
 
     /// Writes out the Xcconfig file
     func writeXcconfig () throws {
+        try makeDirectories(self.projectPath)
         try open(AbsolutePath(self.package.distributionBuildXcconfig.path)) { stream in
             stream (
                 """

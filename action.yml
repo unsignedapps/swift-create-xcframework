@@ -1,0 +1,22 @@
+name: "swift-create-xcframework"
+description: "Creates XCFramework bundles for yout Swift Package and uploads them as Artifacts."
+
+inputs:
+  target:
+    description: "The name of the target(s) you want to create an XCFramework bundle for. One artifact will be uploaded for each target. Separate target names with commas."
+    required: false
+  platforms:
+    description: "The platform(s) that you want to build for. Default is to build for all platforms supported in your Package.swift, or all Apple platforms if omited. Comma-delimited string supported."
+    required: false
+  configuration:
+    description: "Build with a specific configuration ('debug' or 'release')"
+    required: false
+    default: release
+
+runs:
+  using: node12
+  main: action.js
+
+branding:
+  icon: "package"
+  color: "green"

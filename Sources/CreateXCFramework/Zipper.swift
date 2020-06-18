@@ -23,7 +23,7 @@ struct Zipper {
     
     // MARK: - Zippering
     
-    func zip (target: String, version: String?, file: Foundation.URL) throws {
+    func zip (target: String, version: String?, file: Foundation.URL) throws -> Foundation.URL {
         
         let suffix = self.versionSuffix(target: target, default: version) ?? ""
         let zipPath = file.path.replacingOccurrences(of: "\\.xcframework$", with: "\(suffix).zip", options: .regularExpression)
@@ -47,12 +47,7 @@ struct Zipper {
             throw XcodeBuilder.Error.signalExit(signal)
         }
 
-        // notify the action if we have one
-        if self.package.options.githubAction {
-            let data = Data(zipURL.path.utf8)
-            let url = Foundation.URL(fileURLWithPath: self.package.options.buildPath).appendingPathComponent("xcframework-zipfile.url")
-            try data.write(to: url)
-        }
+        return zipURL
     }
     
     private func zipCommand (source: Foundation.URL, target: Foundation.URL) -> [String] {
