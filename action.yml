@@ -1,5 +1,5 @@
 name: "swift-create-xcframework"
-description: "Creates XCFramework bundles for the products in your Swift Package and uploads them as Artifacts. You can then attach them to a release or distribute them as you please."
+description: "Creates XCFramework bundles for the products in your Swift Package and uploads them as Artifacts you can attach to a release"
 
 inputs:
   target:
