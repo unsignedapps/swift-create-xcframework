@@ -8,7 +8,7 @@ let package = Package(
 
     // TODO: Add Linux / Windows support
     platforms: [
-        .macOS(.v10_10),
+        .macOS(.v10_15),
     ],
     
     products: [
@@ -28,5 +28,9 @@ let package = Package(
             .product(name: "SwiftToolsSupport-auto", package: "swift-tools-support-core"),
         ]),
         .testTarget(name: "CreateXCFrameworkTests", dependencies: [ "CreateXCFramework" ]),
+    ],
+
+    swiftLanguageVersions: [
+        .v5
     ]
 )
