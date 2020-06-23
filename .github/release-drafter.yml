@@ -18,7 +18,7 @@ categories:
         - 'documentation'
     - title: '🧰 Maintenance'
       labels:
-        - 'tech:task'
+        - 'tech'
         - 'ci'
 
 exclude-labels:
