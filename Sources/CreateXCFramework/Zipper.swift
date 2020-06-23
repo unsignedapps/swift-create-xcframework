@@ -49,6 +49,13 @@ struct Zipper {
 
         return zipURL
     }
+
+    func checksum (file: Foundation.URL) throws -> Foundation.URL {
+        let sum = self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path), diagnostics: self.package.diagnostics)
+        let checksumFile = file.deletingPathExtension().appendingPathExtension("sha256")
+        try Data(sum.utf8).write(to: checksumFile)
+        return checksumFile
+    }
     
     private func zipCommand (source: Foundation.URL, target: Foundation.URL) -> [String] {
         return [
