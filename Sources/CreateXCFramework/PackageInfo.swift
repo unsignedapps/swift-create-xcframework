@@ -10,6 +10,7 @@ import Build
 import Foundation
 import PackageModel
 import PackageLoading
+import SPMBuildCore
 import Workspace
 import Xcodeproj
 
@@ -40,6 +41,7 @@ struct PackageInfo {
     let graph: PackageGraph
     let manifest: Manifest
     let toolchain: Toolchain
+    let workspace: Workspace
     
     
     // MARJ: - Initialisation
@@ -50,13 +52,18 @@ struct PackageInfo {
         self.buildDirectory = self.rootDirectory.appendingPathComponent(options.buildPath, isDirectory: true).absoluteURL
         
         let root = AbsolutePath(self.rootDirectory.path)
-        
+
         self.toolchain = try UserToolchain(destination: try .hostDestination())
-        self.package = try PackageBuilder.loadPackage(packagePath: root, swiftCompiler: self.toolchain.swiftCompiler, diagnostics: self.diagnostics)
-        self.graph = try Workspace.loadGraph(packagePath: root, swiftCompiler: self.toolchain.swiftCompiler, diagnostics: self.diagnostics)
+
+        let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler)
+        let loader = ManifestLoader(manifestResources: resources)
+        self.workspace = Workspace.create(forRootPackage: root, manifestLoader: loader)
+
+        self.package = try PackageBuilder.loadPackage(packagePath: root, swiftCompiler: self.toolchain.swiftCompiler, xcTestMinimumDeploymentTargets: [:], diagnostics: self.diagnostics)
+        self.graph = self.workspace.loadPackageGraph(root: root, diagnostics: self.diagnostics)
         self.manifest = try ManifestLoader.loadManifest(packagePath: root, swiftCompiler: self.toolchain.swiftCompiler, packageKind: .root)
     }
-    
+
     
     // MARK: - Product/Target Names
     

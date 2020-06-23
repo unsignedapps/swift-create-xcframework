@@ -66,12 +66,8 @@ struct Zipper {
         // find the package that contains our target
         guard let packageRef = self.package.graph.packages.first(where: { $0.targets.contains(where: { $0.name == target } ) }) else { return nil }
 
-        // ok lets ask the workspace for that package's version
-        guard let resources = try? UserManifestResources(swiftCompiler: self.package.toolchain.swiftCompiler) else { return nil }
-        let workspace = Workspace.create(forRootPackage: AbsolutePath(self.package.rootDirectory.path), manifestLoader: ManifestLoader(manifestResources: resources))
-
         guard
-            let dependency = try? workspace.managedDependencies.dependency(forNameOrIdentity: packageRef.name),
+            let dependency = self.package.workspace.state.dependencies[forNameOrIdentity: packageRef.name],
             case let .checkout(checkout) = dependency.state,
             let version = checkout.version
         else {
