@@ -106,11 +106,12 @@ struct Command: ParsableCommand {
         if self.options.zip {
             let zipper = Zipper(package: package)
             let zipped = try xcframeworkFiles
-                .map { pair -> Foundation.URL in
+                .flatMap { pair -> [Foundation.URL] in
                     let zip = try zipper.zip(target: pair.0, version: self.options.zipVersion, file: pair.1)
+                    let checksum = try zipper.checksum(file: zip)
                     try zipper.clean(file: pair.1)
 
-                    return zip
+                    return [ zip, checksum ]
                 }
 
             // notify the action if we have one
