@@ -2,6 +2,10 @@
 
 swift-create-xcframework is a very simple tool designed to wrap `xcodebuild` and the process of creating multiple frameworks for a Swift Package and merging them into a single XCFramework.
 
+On the 23rd of June 2020, Apple announced Xcode 12 and Swift 5.3 with support for Binary Targets. Though they provide a simplified way to [include Binary Frameworks in your packages][apple-docs], they did not provide a simple way to create your XCFrameworks, with only some [documentation for the long manual process][manual-docs]. swift-create-xcframework bridges that gap.
+
+**Note:** swift-create-xcframework pre-dates the WWDC20 announcement and is tested with Xcode 11.4 or later, but should work with Xcode 11.2 or later. You can include the generated XCFrameworks in your app manually even without Xcode 12.
+
 ## Usage
 
 Inside your Swift Package folder you can just run:
@@ -18,6 +22,8 @@ Then for every target or product specified, swift-create-xcframework will:
 2. Build a `.framework` for each supported platform/SDK.
 3. Merge the SDK-specific framework into an XCFramework using `xcodebuild -create-xcframework`.
 4. Optionally package it up into a zip file ready for a GitHub release.
+
+This process mirrors the [official documentation][manual-docs].
 
 ## Choosing what to build
 
@@ -157,3 +163,4 @@ Please read the [Contribution Guide](CONTRIBUTING.md) for details on how to cont
 swift-create-xcframework is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
 
 [apple-docs]: https://developer.apple.com/documentation/swift_packages/distributing_binary_frameworks_as_swift_packages
+[manual-docs]: https://help.apple.com/xcode/mac/11.4/#/dev544efab96
