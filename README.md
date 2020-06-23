@@ -87,11 +87,13 @@ If the target you are creating an XCFramework happens to be a dependency, swift-
 
 If the target you are creating is a product from the root package, unfortunately there is no standard way to identify the version number. For those cases you can specify one with `--zip-version`.
 
+Because you're probably wanting to [distribute your binary frameworks as Swift Packages][apple-docs] `swift create-xcframework --zip` will also calculate the necessary SHA256 checksum and place it alongside the zip. eg: `ArgumentParser-0.0.6.sha256`.
+
 ## GitHub Action
 
 swift-create-xcframework includes a GitHub Action that can kick off and automatically create an XCFramework when you tag a release in your project.
 
-The action produces one XCFramework artifact for every target specified.
+The action produces one zipped XCFramework and checksum artifact for every target specified.
 
 **Note:** You MUST use a macOS-based runner (such as `macos-latest`) as xcodebuild doesn't run on Linux.
 
@@ -153,3 +155,5 @@ Please read the [Contribution Guide](CONTRIBUTING.md) for details on how to cont
 ## License
 
 swift-create-xcframework is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
+
+[apple-docs]: https://developer.apple.com/documentation/swift_packages/distributing_binary_frameworks_as_swift_packages
