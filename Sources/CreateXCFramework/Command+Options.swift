@@ -30,6 +30,9 @@ extension Command {
         
         @Flag(help: "Prints the available products and targets")
         var listProducts: Bool
+
+        @Option(help: "The path to a .xcconfig file that can be used to override Xcode build settings. Relative to the package path.")
+        var xcconfig: String?
         
         
         // MARK: - Output Options

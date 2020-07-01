@@ -50,7 +50,7 @@ struct Command: ParsableCommand {
         let platforms = try package.supportedPlatforms()
 
         // get what we're building
-        try generator.writeXcconfig()
+        try generator.writeDistributionXcconfig()
         let project = try generator.generate()
 
         // printing packages?
@@ -65,9 +65,7 @@ struct Command: ParsableCommand {
 
         // we've applied the xcconfig to everything, but some dependencies (*cough* swift-nio)
         // have build errors, so we remove it from targets we're not building
-        for target in project.targets where productNames.contains(target.name) == false {
-            target.buildSettings.xcconfigFileRef = nil
-        }
+        try project.enableDistribution(targets: productNames, xcconfig: AbsolutePath(package.distributionBuildXcconfig.path).relative(to: AbsolutePath(package.rootDirectory.path)))
 
         // save the project
         try project.save(to: generator.projectPath)

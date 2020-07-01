@@ -12,6 +12,9 @@ inputs:
     description: "Build with a specific configuration ('debug' or 'release')"
     required: false
     default: release
+  xcconfig:
+    description: "The path to a .xcconfig file that can be used to override Xcode build settings. Relative to the package path."
+    required: false
 
 runs:
   using: node12

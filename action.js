@@ -15,6 +15,7 @@ async function run () {
         let targets = core.getInput('target', { required: false })
         let configuration = core.getInput('configuration', { required: false })
         let platforms = core.getInput('platforms', { required: false })
+        let xcconfig = core.getInput('xcconfig', { required: false })
 
         // install mint if its not installed
         await installUsingBrewIfRequired("mint")
@@ -32,6 +33,11 @@ async function run () {
         if (!!configuration) {
             options.push('--configuration')
             options.push(configuration)
+        }
+
+        if (!!xcconfig) {
+            options.push('--xcconfig')
+            options.push(xcconfig)
         }
 
         if (!!platforms) {
