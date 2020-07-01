@@ -32,7 +32,22 @@ struct PackageInfo {
             .appendingPathComponent("Distribution.xcconfig")
             .absoluteURL
     }
-    
+
+    var overridesXcconfig: Foundation.URL? {
+        guard let path = self.options.xcconfig else { return nil }
+
+        // absolute path
+        if path.hasPrefix("/") {
+            return Foundation.URL(fileURLWithPath: path)
+
+        // strip current directory if thats where we are
+        } else if path.hasPrefix("./") {
+            return self.rootDirectory.appendingPathComponent(String(path[path.index(path.startIndex, offsetBy: 2)...]))
+        }
+
+        return self.rootDirectory.appendingPathComponent(path)
+    }
+
     // TODO: Map diagnostics to swift-log
     let diagnostics = DiagnosticsEngine()
     

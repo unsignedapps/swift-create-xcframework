@@ -15,7 +15,8 @@ struct ProjectGenerator {
     private enum Constants {
         static let `extension` = "xcodeproj"
     }
-    
+
+
     // MARK: - Properties
     
     let package: PackageInfo
@@ -24,19 +25,32 @@ struct ProjectGenerator {
         let dir = AbsolutePath(self.package.projectBuildDirectory.path)
         return buildXcodeprojPath(outputDir: dir, projectName: self.package.package.name)
     }
-    
+
+
     // MARK: - Initialisation
     
     init (package: PackageInfo) {
         self.package = package
     }
-    
+
+
     // MARK: - Generation
 
     /// Writes out the Xcconfig file
-    func writeXcconfig () throws {
+    func writeDistributionXcconfig () throws {
         try makeDirectories(self.projectPath)
-        try open(AbsolutePath(self.package.distributionBuildXcconfig.path)) { stream in
+
+        let path = AbsolutePath(self.package.distributionBuildXcconfig.path)
+        try open(path) { stream in
+            if let absolutePath = self.package.overridesXcconfig?.path {
+                stream (
+                    """
+                    #include "\(AbsolutePath(absolutePath).relative(to: AbsolutePath(path.dirname)).pathString)"
+
+                    """
+                )
+            }
+
             stream (
                 """
                 BUILD_LIBRARY_FOR_DISTRIBUTION=YES
@@ -59,18 +73,43 @@ struct ProjectGenerator {
             graph: self.package.graph,
             extraDirs: [],
             extraFiles: [],
-            options: XcodeprojOptions(xcconfigOverrides: AbsolutePath(self.package.distributionBuildXcconfig.path)),
+            options: XcodeprojOptions(xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { AbsolutePath($0) }),
             diagnostics: self.package.diagnostics
         )
 
         return project
     }
+
 }
 
 
 // MARK: - Saving Xcode Projects
 
 extension Xcode.Project {
+
+    /// This is the group that is normally created in Xcodeproj.xcodeProject() when you specify an xcconfigOverride
+    var configGroup: Xcode.Group {
+        let name = "Configs"
+
+        if let group = self.mainGroup.subitems.lazy.compactMap({ $0 as? Xcode.Group }).first(where: { $0.name == name }) {
+            return group
+        }
+
+        // doesn't exist - lets creat it
+        return self.mainGroup.addGroup(path: "", name: name)
+    }
+
+    func enableDistribution (targets: [String], xcconfig: RelativePath) throws {
+        let group = self.configGroup
+        let ref = group.addFileReference (
+            path: xcconfig.pathString,
+            name: xcconfig.basename
+        )
+
+        for target in self.targets where targets.contains(target.name) {
+            target.buildSettings.xcconfigFileRef = ref
+        }
+    }
 
     func save (to path: AbsolutePath) throws {
         try open(path.appending(component: "project.pbxproj")) { stream in
