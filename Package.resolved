@@ -6,16 +6,25 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
         "state": {
           "branch": null,
-          "revision": "3d79b2b5a2e5af52c14e462044702ea7728f5770",
-          "version": "0.1.0"
+          "revision": "92646c0cdbaca076c8d3d0207891785b3379cbff",
+          "version": "0.3.1"
+        }
+      },
+      {
+        "package": "swift-driver",
+        "repositoryURL": "https://github.com/apple/swift-driver.git",
+        "state": {
+          "branch": "main",
+          "revision": "ac4af7a1b25a970cc6d38f8b98b10d05b8447faa",
+          "version": null
         }
       },
       {
         "package": "llbuild",
         "repositoryURL": "https://github.com/apple/swift-llbuild.git",
         "state": {
-          "branch": "master",
-          "revision": "145c113cde37318f3cef38843f9ce6a678aaa4fd",
+          "branch": "main",
+          "revision": "8bf47bbacac034fb8bab489aef86de9247574959",
           "version": null
         }
       },
@@ -23,8 +32,8 @@
         "package": "SwiftPM",
         "repositoryURL": "https://github.com/apple/swift-package-manager.git",
         "state": {
-          "branch": "release/5.3",
-          "revision": "f4cf6f773f046b0a769bab5fb2375d90463b3e9a",
+          "branch": null,
+          "revision": "5abb16c6ea0657a23bca2660c49ed65465e7cc7a",
           "version": null
         }
       },
@@ -32,9 +41,18 @@
         "package": "swift-tools-support-core",
         "repositoryURL": "https://github.com/apple/swift-tools-support-core.git",
         "state": {
-          "branch": "master",
-          "revision": "81e2cda46447b4d78c18e03b0d284d76950f7c2b",
+          "branch": "main",
+          "revision": "243beea77d20db46647a3de4765c96e2c801c7c7",
           "version": null
+        }
+      },
+      {
+        "package": "Yams",
+        "repositoryURL": "https://github.com/jpsim/Yams.git",
+        "state": {
+          "branch": null,
+          "revision": "88caa2e6fffdbef2e91c2022d038576062042907",
+          "version": "4.0.0"
         }
       }
     ]
