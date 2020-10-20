@@ -68,21 +68,23 @@ struct XcodeBuilder {
     // MARK: - Build
 
     func build (targets: [String], sdk: TargetPlatform.SDK) throws -> [String: Foundation.URL] {
-        let process = TSCBasic.Process (
-            arguments: try self.buildCommand(targets: targets, sdk: sdk),
-            outputRedirection: .none
-        )
+        for target in targets {
+            let process = TSCBasic.Process (
+                arguments: try self.buildCommand(target: target, sdk: sdk),
+                outputRedirection: .none
+            )
 
-        try process.launch()
-        let result = try process.waitUntilExit()
+            try process.launch()
+            let result = try process.waitUntilExit()
 
-        switch result.exitStatus {
-        case let .terminated(code: code):
-            if code != 0 {
-                throw Error.nonZeroExit(code)
+            switch result.exitStatus {
+            case let .terminated(code: code):
+                if code != 0 {
+                    throw Error.nonZeroExit(code)
+                }
+            case let .signalled(signal: signal):
+                throw Error.signalExit(signal)
             }
-        case let .signalled(signal: signal):
-            throw Error.signalExit(signal)
         }
 
         return targets
@@ -91,21 +93,30 @@ struct XcodeBuilder {
             }
     }
 
-    private func buildCommand (targets: [String], sdk: TargetPlatform.SDK) throws -> [String] {
+    private func buildCommand (target: String, sdk: TargetPlatform.SDK) throws -> [String] {
         var command: [String] = [
             "xcrun",
             "xcodebuild",
             "-project", self.path.pathString,
             "-configuration", self.options.configuration.xcodeConfigurationName,
-            "-sdk", sdk.sdkName,
-            "BUILD_DIR=\(self.buildDirectory.path)"
+            "-archivePath", self.buildDirectory.appendingPathComponent(self.productName(target: target)).appendingPathComponent(sdk.archiveName).path,
+            "-destination", sdk.destination,
+            "BUILD_DIR=\(self.buildDirectory.path)",
+            "SKIP_INSTALL=NO"
         ]
 
+        // add any build settings
+        if let settings = sdk.buildSettings {
+            for setting in settings {
+                command.append("\(setting.key)=\(setting.value)")
+            }
+        }
+
         // add our targets
-        command += targets.flatMap { [ "-target", $0 ] }
+        command += [ "-scheme", target ]
 
         // and the command
-        command += [ "build" ]
+        command += [ "archive" ]
 
         return command
     }
@@ -113,7 +124,9 @@ struct XcodeBuilder {
     // we should probably pull this from the build output but we just make assumptions here
     private func frameworkPath (target: String, sdk: TargetPlatform.SDK) -> Foundation.URL {
         return self.buildDirectory
-            .appendingPathComponent(self.options.configuration.xcodeConfigurationName + sdk.directorySuffix)
+            .appendingPathComponent(self.productName(target: target))
+            .appendingPathComponent(sdk.archiveName)
+            .appendingPathComponent("Products/Library/Frameworks")
             .appendingPathComponent("\(self.productName(target: target)).framework")
             .absoluteURL
     }
@@ -123,6 +136,9 @@ struct XcodeBuilder {
 
     func merge (target: String, frameworks: [Foundation.URL]) throws -> Foundation.URL {
         let outputPath = self.xcframeworkPath(target: target)
+
+        // try to remove it if its already there, otherwise we're going to get errors
+        try? FileManager.default.removeItem(at: outputPath)
 
         let process = TSCBasic.Process (
             arguments: self.mergeCommand(outputPath: outputPath, frameworks: frameworks),
@@ -156,7 +172,6 @@ struct XcodeBuilder {
 
         // and the output
         command += [ "-output", outputPath.path ]
-
         return command
     }
 

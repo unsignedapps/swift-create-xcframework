@@ -160,7 +160,8 @@ struct PackageInfo {
     /// check if our command line platforms are supported by the package definition
     func supportedPlatforms () throws -> [TargetPlatform] {
 
-        let supported = self.options.platform.nonEmpty ?? TargetPlatform.allCases
+        // if they have specified platforms all good, if not go everything except catalyst
+        let supported = self.options.platform.nonEmpty ?? TargetPlatform.allCases.filter { $0 != .maccatalyst }
 
         // do we have package platforms defined?
         guard let packagePlatforms = self.manifest.platforms.nonEmpty else {
@@ -169,11 +170,11 @@ struct PackageInfo {
 
         // filter our package platforms to make sure everything is supported
         let target = packagePlatforms
-            .compactMap { platform -> TargetPlatform? in
-                return supported.first(where: { $0.rawValue == platform.platformName })
+            .compactMap { platform -> [TargetPlatform]? in
+                return supported.filter({ $0.platformName == platform.platformName })
             }
+            .flatMap { $0 }
 
-        // are they different then?
         return target
     }
 

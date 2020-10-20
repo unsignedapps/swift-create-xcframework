@@ -11,6 +11,7 @@ import PackageModel
 enum TargetPlatform: String, ExpressibleByArgument, CaseIterable {
     case ios
     case macos
+    case maccatalyst
     case tvos
     case watchos
 
@@ -19,36 +20,52 @@ enum TargetPlatform: String, ExpressibleByArgument, CaseIterable {
     }
 
 
+    var platformName: String {
+        switch self {
+        case .ios:          return "ios"
+        case .macos:        return "macos"
+        case .maccatalyst:  return "macos"
+        case .tvos:         return "tvos"
+        case .watchos:      return "watchos"
+        }
+    }
+
     // MARK: - Target SDKs
 
     struct SDK {
-        let sdkName: String
-        let directorySuffix: String
+        let destination: String
+        let archiveName: String
+        let buildSettings: [String: String]?
     }
 
     var sdks: [SDK] {
         switch self {
         case .ios:
             return [
-                SDK(sdkName: "iphoneos", directorySuffix: "-iphoneos"),
-                SDK(sdkName: "iphonesimulator", directorySuffix: "-iphonesimulator")
+                SDK(destination: "generic/platform=iOS", archiveName: "iphoneos.xcarchive", buildSettings: nil),
+                SDK(destination: "generic/platform=iOS Simulator", archiveName: "iphonesimulator.xcarchive", buildSettings: nil)
             ]
 
         case .macos:
             return [
-                SDK(sdkName: "macosx", directorySuffix: "")
+                SDK(destination: "platform=macOS", archiveName: "macos.xcarchive", buildSettings: nil)
+            ]
+
+        case .maccatalyst:
+            return [
+                SDK(destination: "platform=macOS,variant=Mac Catalyst", archiveName: "maccatalyst.xcarchive", buildSettings: [ "SUPPORTS_MACCATALYST": "YES" ])
             ]
 
         case .tvos:
             return [
-                SDK(sdkName: "appletvos", directorySuffix: "-appletvos"),
-                SDK(sdkName: "appletvsimulator", directorySuffix: "-appletvsimulator")
+                SDK(destination: "generic/platform=tvOS", archiveName: "appletvos.xcarchive", buildSettings: nil),
+                SDK(destination: "generic/platform=tvOS Simulator", archiveName: "appletvsimulator.xcarchive", buildSettings: nil)
             ]
 
         case .watchos:
             return [
-                SDK(sdkName: "watchos", directorySuffix: "-watchos"),
-                SDK(sdkName: "watchsimulator", directorySuffix: "-watchsimulator")
+                SDK(destination: "generic/platform=watchOS", archiveName: "watchos.xcarchive", buildSettings: nil),
+                SDK(destination: "generic/platform=watchOS Simulator", archiveName: "watchsimulator.xcarchive", buildSettings: nil)
             ]
         }
     }
