@@ -80,7 +80,7 @@ struct Command: ParsableCommand {
         }
 
         // all of our targets for each platform, then group the resulting .frameworks by target
-        var frameworkFiles: [String: [Foundation.URL]] = [:]
+        var frameworkFiles: [String: [XcodeBuilder.BuildResult]] = [:]
 
         for sdk in sdks {
             try builder.build(targets: productNames, sdk: sdk)
@@ -97,7 +97,7 @@ struct Command: ParsableCommand {
         // then we merge the resulting frameworks
         try frameworkFiles
             .forEach { pair in
-                xcframeworkFiles.append((pair.key, try builder.merge(target: pair.key, frameworks: pair.value)))
+                xcframeworkFiles.append((pair.key, try builder.merge(target: pair.key, buildResults: pair.value)))
             }
 
         // zip it up if thats what they want

@@ -41,10 +41,10 @@ struct Zipper {
         switch result.exitStatus {
         case let .terminated(code: code):
             if code != 0 {
-                throw XcodeBuilder.Error.nonZeroExit(code)
+                throw XcodeBuilder.Error.nonZeroExit("ditto", code)
             }
         case let .signalled(signal: signal):
-            throw XcodeBuilder.Error.signalExit(signal)
+            throw XcodeBuilder.Error.signalExit("ditto", signal)
         }
 
         return zipURL

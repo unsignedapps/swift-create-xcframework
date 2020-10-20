@@ -28,6 +28,9 @@ extension Command {
         @Flag(inversion: .prefixedNo, help: "Whether to clean before we build")
         var clean = true
 
+        @Flag(inversion: .prefixedNo, help: "Whether to include debug symbols in the built XCFramework")
+        var debugSymbols = true
+
         @Flag(help: "Prints the available products and targets")
         var listProducts = false
 
