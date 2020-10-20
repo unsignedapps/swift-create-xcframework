@@ -34,7 +34,7 @@ jobs:
           path: Vexil
 
       - name: 📦 Package Vexil
-        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
+        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos Vexil Vexillographer
 
   tests-xcode-12:
     name: Test Builds - Xcode 12
@@ -57,4 +57,4 @@ jobs:
           path: Vexil
 
       - name: 📦 Package Vexil
-        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
+        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos Vexil Vexillographer
