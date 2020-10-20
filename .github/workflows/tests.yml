@@ -24,7 +24,17 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 🧱 Build
-        run: make build
+        run: make build-release
+
+      - name: 🚩 Checkout Vexil
+        uses: actions/checkout@v2
+        with:
+          repository: unsignedapps/Vexil
+          ref: v1.2.2
+          path: Vexil
+
+      - name: 📦 Package Vexil
+        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
 
   tests-xcode-12:
     name: Test Builds - Xcode 12
@@ -37,17 +47,14 @@ jobs:
         uses: actions/checkout@v2
 
       - name: 🧱 Build
-        run: make build
+        run: make build-release
 
-  tests-xcode-11:
-    name: Test Builds - Xcode 11.7
-    runs-on: macOS-latest
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_11.7.app/Contents/Developer
-    
-    steps:
-      - name: 🛒 Checkout
+      - name: 🚩 Checkout Vexil
         uses: actions/checkout@v2
+        with:
+          repository: unsignedapps/Vexil
+          ref: v1.2.2
+          path: Vexil
 
-      - name: 🧱 Build
-        run: make build
+      - name: 📦 Package Vexil
+        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
