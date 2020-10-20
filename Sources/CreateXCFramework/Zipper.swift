@@ -71,7 +71,7 @@ struct Zipper {
     private func versionSuffix (target: String, default fallback: String?) -> String? {
 
         // find the package that contains our target
-        guard let packageRef = self.package.graph.packages.first(where: { $0.targets.contains(where: { $0.name == target } ) }) else { return nil }
+        guard let packageRef = self.package.graph.packages.first(where: { $0.targets.contains(where: { $0.name == target }) }) else { return nil }
 
         guard
             let dependency = self.package.workspace.state.dependencies[forNameOrIdentity: packageRef.name],

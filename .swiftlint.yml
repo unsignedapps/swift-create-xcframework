@@ -3,6 +3,7 @@ disabled_rules:
   - object_literal
   - prefixed_toplevel_constant
   - todo
+  - let_var_whitespace
   - type_name
   - vertical_whitespace
 
@@ -28,7 +29,6 @@ opt_in_rules:
   - last_where
   - legacy_multiple
   - legacy_random
-  - let_var_whitespace
   - literal_expression_end_indentation
   - lower_acl_than_parent
   - modifier_order

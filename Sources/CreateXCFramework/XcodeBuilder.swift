@@ -8,9 +8,9 @@
 import Build
 import Foundation
 import PackageModel
-import Xcodeproj
 import TSCBasic
 import TSCUtility
+import Xcodeproj
 
 struct XcodeBuilder {
 

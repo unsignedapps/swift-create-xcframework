@@ -42,7 +42,7 @@ enum TargetPlatform: String, ExpressibleByArgument, CaseIterable {
         case .tvos:
             return [
                 SDK(sdkName: "appletvos", directorySuffix: "-appletvos"),
-                SDK(sdkName: "appletvsimulator", directorySuffix: "-appletvsimulator"),
+                SDK(sdkName: "appletvsimulator", directorySuffix: "-appletvsimulator")
             ]
 
         case .watchos:

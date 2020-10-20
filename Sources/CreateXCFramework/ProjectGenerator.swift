@@ -124,7 +124,8 @@ extension Xcode.Project {
             ///// directory that Xcode project is generated
             let name = "\(target.name.spm_mangledToC99ExtendedIdentifier())_Info.plist"
             try open(path.appending(RelativePath(name))) { print in
-                print("""
+                print(
+                    """
                     <?xml version="1.0" encoding="UTF-8"?>
                     <plist version="1.0">
                     <dict>
@@ -150,7 +151,8 @@ extension Xcode.Project {
                     <string></string>
                     </dict>
                     </plist>
-                    """)
+                    """
+                )
             }
         }
     }
@@ -160,7 +162,7 @@ extension Xcode.Project {
 ///
 /// This method doesn't rewrite the file in case the new and old contents of
 /// file are same.
-fileprivate func open(_ path: AbsolutePath, body: ((String) -> Void) throws -> Void) throws {
+private func open(_ path: AbsolutePath, body: ((String) -> Void) throws -> Void) throws {
     let stream = BufferedOutputByteStream()
     try body { line in
         stream <<< line

@@ -8,8 +8,8 @@
 import ArgumentParser
 import Build
 import Foundation
-import PackageModel
 import PackageLoading
+import PackageModel
 import SPMBuildCore
 import Workspace
 import Xcodeproj
@@ -74,9 +74,22 @@ struct PackageInfo {
         let loader = ManifestLoader(manifestResources: resources)
         self.workspace = Workspace.create(forRootPackage: root, manifestLoader: loader)
 
-        self.package = try PackageBuilder.loadPackage(packagePath: root, swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: self.toolchain.extraSwiftCFlags, xcTestMinimumDeploymentTargets: [:], diagnostics: self.diagnostics)
+        self.package = try PackageBuilder.loadPackage (
+            packagePath: root,
+            swiftCompiler: self.toolchain.swiftCompiler,
+            swiftCompilerFlags: self.toolchain.extraSwiftCFlags,
+            xcTestMinimumDeploymentTargets: [:],
+            diagnostics: self.diagnostics
+        )
+
         self.graph = self.workspace.loadPackageGraph(root: root, diagnostics: self.diagnostics)
-        self.manifest = try ManifestLoader.loadManifest(packagePath: root, swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: self.toolchain.extraSwiftCFlags, packageKind: .root)
+
+        self.manifest = try ManifestLoader.loadManifest (
+            packagePath: root,
+            swiftCompiler: self.toolchain.swiftCompiler,
+            swiftCompilerFlags: self.toolchain.extraSwiftCFlags,
+            packageKind: .root
+        )
     }
 
 
@@ -93,10 +106,15 @@ struct PackageInfo {
         }
 
         // validation
-        guard productNames.isEmpty == false else { throw ValidationError("No products to create frameworks for were found. Add library products to Package.swift or specify products/targets on the command line.") }
+        guard productNames.isEmpty == false else {
+            throw ValidationError (
+                "No products to create frameworks for were found. Add library products to Package.swift"
+                    + " or specify products/targets on the command line."
+            )
+        }
 
         let xcodeTargetNames = project.frameworkTargets.map { $0.name }
-        let invalidProducts = productNames.filter { xcodeTargetNames.contains($0) == false}
+        let invalidProducts = productNames.filter { xcodeTargetNames.contains($0) == false }
         guard invalidProducts.isEmpty == true else {
 
             let allLibraryProductNames = self.package.manifest.libraryProductNames
