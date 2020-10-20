@@ -44,7 +44,7 @@ extension Command {
                 valueName: TargetPlatform.allCases.map({ $0.rawValue }).joined(separator: "|")
             )
         )
-        var platform: [TargetPlatform]
+        var platform: [TargetPlatform] = []
 
         @Option(help: ArgumentHelp("Where to place the compiled .xcframework(s)", valueName: "directory"))
         var output = "."
@@ -69,7 +69,7 @@ extension Command {
         // MARK: - Targets
 
         @Argument(help: "An optional list of products (or targets) to build. Defaults to building all `.library` products")
-        var products: [String]
+        var products: [String] = []
     }
 }
 

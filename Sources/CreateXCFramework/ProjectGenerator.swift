@@ -73,7 +73,10 @@ struct ProjectGenerator {
             graph: self.package.graph,
             extraDirs: [],
             extraFiles: [],
-            options: XcodeprojOptions(xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { AbsolutePath($0) }),
+            options: XcodeprojOptions (
+                xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { AbsolutePath($0) },
+                useLegacySchemeGenerator: true
+            ),
             diagnostics: self.package.diagnostics
         )
 
