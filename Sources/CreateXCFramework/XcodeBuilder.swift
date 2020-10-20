@@ -8,37 +8,37 @@
 import Build
 import Foundation
 import PackageModel
-import Xcodeproj
 import TSCBasic
 import TSCUtility
+import Xcodeproj
 
 struct XcodeBuilder {
-    
+
     // MARK: - Properties
-    
+
     let path: AbsolutePath
     let project: Xcode.Project
     let package: PackageInfo
     let options: Command.Options
-    
+
     var buildDirectory: Foundation.URL {
         self.package.projectBuildDirectory
             .appendingPathComponent("build")
             .absoluteURL
     }
-    
+
     // MARK: - Initialisation
-    
+
     init (project: Xcode.Project, projectPath: AbsolutePath, package: PackageInfo, options: Command.Options) {
         self.project = project
         self.path = projectPath
         self.package = package
         self.options = options
     }
-    
-    
+
+
     // MARK: - Clean
-    
+
     func clean () throws {
         let process = TSCBasic.Process (
             arguments: [
@@ -50,7 +50,7 @@ struct XcodeBuilder {
             ],
             outputRedirection: .none
         )
-        
+
         try process.launch()
         let result = try process.waitUntilExit()
 
@@ -63,10 +63,10 @@ struct XcodeBuilder {
             throw Error.signalExit(signal)
         }
     }
-    
-    
+
+
     // MARK: - Build
-    
+
     func build (targets: [String], sdk: TargetPlatform.SDK) throws -> [String: Foundation.URL] {
         let process = TSCBasic.Process (
             arguments: try self.buildCommand(targets: targets, sdk: sdk),
@@ -84,13 +84,13 @@ struct XcodeBuilder {
         case let .signalled(signal: signal):
             throw Error.signalExit(signal)
         }
-        
+
         return targets
             .reduce(into: [String: Foundation.URL]()) { dict, name in
                 dict[name] = self.frameworkPath(target: name, sdk: sdk)
             }
     }
-    
+
     private func buildCommand (targets: [String], sdk: TargetPlatform.SDK) throws -> [String] {
         var command: [String] = [
             "xcrun",
@@ -100,16 +100,16 @@ struct XcodeBuilder {
             "-sdk", sdk.sdkName,
             "BUILD_DIR=\(self.buildDirectory.path)"
         ]
-        
+
         // add our targets
         command += targets.flatMap { [ "-target", $0 ] }
-        
+
         // and the command
         command += [ "build" ]
-        
+
         return command
     }
-    
+
     // we should probably pull this from the build output but we just make assumptions here
     private func frameworkPath (target: String, sdk: TargetPlatform.SDK) -> Foundation.URL {
         return self.buildDirectory
@@ -117,18 +117,18 @@ struct XcodeBuilder {
             .appendingPathComponent("\(self.productName(target: target)).framework")
             .absoluteURL
     }
-    
-    
+
+
     // MARK: - Merging
-    
+
     func merge (target: String, frameworks: [Foundation.URL]) throws -> Foundation.URL {
         let outputPath = self.xcframeworkPath(target: target)
-        
+
         let process = TSCBasic.Process (
             arguments: self.mergeCommand(outputPath: outputPath, frameworks: frameworks),
             outputRedirection: .none
         )
-        
+
         try process.launch()
         let result = try process.waitUntilExit()
 
@@ -140,7 +140,7 @@ struct XcodeBuilder {
         case let .signalled(signal: signal):
             throw Error.signalExit(signal)
         }
-        
+
         return outputPath
     }
 
@@ -150,21 +150,21 @@ struct XcodeBuilder {
             "xcodebuild",
             "-create-xcframework"
         ]
-        
+
         // add our frameworks
         command += frameworks.flatMap { [ "-framework", $0.path ] }
-        
+
         // and the output
         command += [ "-output", outputPath.path ]
-        
+
         return command
     }
-    
+
     private func xcframeworkPath (target: String) -> Foundation.URL {
         return URL(fileURLWithPath: self.options.output)
             .appendingPathComponent("\(self.productName(target: target)).xcframework")
     }
-    
+
     private func productName (target: String) -> String {
         // Xcode replaces any non-alphanumeric characters in the target with an underscore
         // https://developer.apple.com/documentation/swift/imported_c_and_objective-c_apis/importing_swift_into_objective-c
@@ -173,14 +173,14 @@ struct XcodeBuilder {
             .replacingOccurrences(of: "^[0-9]", with: "_", options: .regularExpression)
 
     }
-    
-    
+
+
     // MARK: - Errors
-    
+
     enum Error: Swift.Error, LocalizedError {
         case nonZeroExit(Int32)
         case signalExit(Int32)
-        
+
         var errorDescription: String? {
             switch self {
             case let .nonZeroExit(code):

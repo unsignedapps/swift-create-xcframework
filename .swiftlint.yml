@@ -1,0 +1,84 @@
+disabled_rules:
+  - no_space_in_method_call
+  - object_literal
+  - prefixed_toplevel_constant
+  - todo
+  - let_var_whitespace
+  - type_name
+  - vertical_whitespace
+
+opt_in_rules:
+  - anyobject_protocol
+  - array_init
+  - attributes
+  - collection_alignment
+  - closure_end_indentation
+  - closure_spacing
+  - contains_over_first_not_nil
+  - convenience_type
+  - discouraged_object_literal
+  - empty_count
+  - empty_string
+  - empty_xctest_method
+  - explicit_init
+  - extension_access_modifier
+  - fatal_error_message
+  - first_where
+  - identical_operands
+  - joined_default_parameter
+  - last_where
+  - legacy_multiple
+  - legacy_random
+  - literal_expression_end_indentation
+  - lower_acl_than_parent
+  - modifier_order
+  - multiline_arguments
+  - multiline_arguments_brackets
+  - multiline_function_chains
+  - multiline_literal_brackets
+  - multiline_parameters
+  - multiline_parameters_brackets
+  - multiple_closures_with_trailing_closure
+  - operator_usage_whitespace
+  - overridden_super_call
+  - override_in_extension
+  - pattern_matching_keywords
+  - prohibited_super_call
+  - reduce_into
+  - redundant_nil_coalescing
+  - redundant_type_annotation
+  - single_test_class
+  - sorted_first_last
+  - sorted_imports
+  - static_operator
+  - strong_iboutlet
+  - toggle_bool
+  - unavailable_function
+  - unneeded_parentheses_in_closure_argument
+  - vertical_parameter_alignment_on_call  
+  - xct_specific_matcher
+  - yoda_condition
+
+cyclomatic_complexity:
+  ignores_case_statements: true
+
+line_length:
+  ignores_function_declarations: true
+  warning: 180
+
+identifier_name:
+  excluded: [id, x, y, z, r, g, b, a, i, j, k, cx, cy, dx, dy, _rootGroup]
+
+modifier_order:
+  preferred_modifier_order:
+    - acl
+    - override
+
+nesting:
+  type_level: 2
+
+included:
+  - "Sources"
+
+excluded:
+  - "Package.swift"

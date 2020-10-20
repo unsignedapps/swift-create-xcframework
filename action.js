@@ -66,7 +66,7 @@ async function run () {
         let files = fs.readFileSync(outputPath, { encoding: 'utf8' })
             .split('\n')
             .map((file) => file.trim())
-        
+
         for (var i = 0, c = files.length; i < c; i++) {
             let file = files[i]
             let name = path.basename(file)
@@ -117,7 +117,7 @@ run()
 // USAGE: command [--package-path <directory>] [--build-path <directory>] [--configuration <debug|release>] [--clean] [--no-clean] [--list-products] [--platform <ios|macos|tvos|watchos> ...] [--output <directory>] [--zip] [--zip-version <version>] [<products> ...]
 
 // ARGUMENTS:
-//   <products>              An optional list of products (or targets) to build. Defaults to building all `.library` products 
+//   <products>              An optional list of products (or targets) to build. Defaults to building all `.library` products
 
 // OPTIONS:
 //   --package-path <directory>
@@ -127,16 +127,16 @@ run()
 //   --configuration <debug|release>
 //                           Build with a specific configuration (default: release)
 //   --clean/--no-clean      Whether to clean before we build (default: true)
-//   --list-products         Prints the available products and targets 
+//   --list-products         Prints the available products and targets
 //   --platform <ios|macos|tvos|watchos>
 //                           A list of platforms you want to build for. Can be specified multiple times. Default is to build for all platforms supported in your
-//                           Package.swift, or all Apple platforms if omitted 
+//                           Package.swift, or all Apple platforms if omitted
 //   --output <directory>    Where to place the compiled .xcframework(s) (default: .)
-//   --zip                   Whether to wrap the .xcframework(s) up in a versioned zip file ready for deployment 
+//   --zip                   Whether to wrap the .xcframework(s) up in a versioned zip file ready for deployment
 //   --zip-version <version> The version number to append to the name of the zip file
 
 //                           If the target you are packaging is a dependency, swift-create-xcframework will look into the package graph and locate the version
 //                           number the dependency resolved to. As there is no standard way to specify the version inside your Swift Package, --zip-version lets
-//                           you specify it manually. 
+//                           you specify it manually.
 //   --version               Show the version.
 //   -h, --help              Show help information.

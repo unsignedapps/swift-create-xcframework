@@ -52,7 +52,7 @@ By default swift-create-xcframework will build `ExampleGenerator.xcframework` th
 
 ### Choosing Platforms
 
-You can narrow down what gets built 
+You can narrow down what gets built
 If you omit the platforms specification, we'll build for all platforms that support Swift Binary Frameworks, which at the time of writing is just the Apple SDKs: macosx, iphoneos, iphonesimulator, watchos, watchsimulator, appletvos, appletvsimulator.
 
 **Note:** Because only Apple's platforms are supported at this time, swift-create-xcframework will ignore Linux and other platforms in the Package.swift.
@@ -127,7 +127,7 @@ jobs:
 
       - name: Create XCFramework
         uses: unsignedapps/swift-create-xcframework@v1
-        
+
       # Create a release
       # Upload those artifacts to the release
 ```

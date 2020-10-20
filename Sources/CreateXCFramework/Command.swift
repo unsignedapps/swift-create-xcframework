@@ -14,9 +14,9 @@ import Workspace
 import Xcodeproj
 
 struct Command: ParsableCommand {
-        
+
     // MARK: - Configuration
-    
+
     static var configuration = CommandConfiguration (
         abstract: "Creates an XCFramework out of a Swift Package using xcodebuild",
         discussion:
@@ -29,18 +29,18 @@ struct Command: ParsableCommand {
             """,
         version: "1.2.1"
     )
-    
-    
+
+
     // MARK: - Arguments
-    
+
     @OptionGroup()
     var options: Options
-    
-    
+
+
     // MARK: - Execution
-    
+
     func run() throws {
-        
+
         // load all/validate of the package info
         let package = try PackageInfo(options: self.options)
 
@@ -70,10 +70,10 @@ struct Command: ParsableCommand {
         // save the project
         try project.save(to: generator.projectPath)
 
-        
+
         // start building
         let builder = XcodeBuilder(project: project, projectPath: generator.projectPath, package: package, options: self.options)
-        
+
         // clean first
         if self.options.clean {
             try builder.clean()
@@ -81,7 +81,7 @@ struct Command: ParsableCommand {
 
         // all of our targets for each platform, then group the resulting .frameworks by target
         var frameworkFiles: [String: [Foundation.URL]] = [:]
-        
+
         for sdk in sdks {
             try builder.build(targets: productNames, sdk: sdk)
                 .forEach { pair in
@@ -99,7 +99,7 @@ struct Command: ParsableCommand {
             .forEach { pair in
                 xcframeworkFiles.append((pair.key, try builder.merge(target: pair.key, frameworks: pair.value)))
             }
-        
+
         // zip it up if thats what they want
         if self.options.zip {
             let zipper = Zipper(package: package)
@@ -129,7 +129,7 @@ struct Command: ParsableCommand {
 
 private enum Error: Swift.Error, LocalizedError {
     case noProducts
-    
+
     var errorDescription: String? {
         switch self {
         case .noProducts:           return ""
