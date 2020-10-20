@@ -63,6 +63,10 @@ You can specify a subset of the platforms to build using the `--platform` option
 swift create-xcframework --platform ios --platform macos ...
 ```
 
+#### Catalyst
+
+You can build your XCFrameworks with support for Mac Catalyst by specifying `--platform maccatalyst` on the command line. As you can't include or exclude Catalyst support in your `Package.swift` we don't try to build it automatically.
+
 ### Choosing Products
 
 Because we wrap `xcodebuild`, you can actually build XCFrameworks from anything that will be mapped to an Xcode project as a Framework target. This includes all of the dependencies your Package has.
@@ -126,7 +130,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create XCFramework
-        uses: unsignedapps/swift-create-xcframework@v1
+        uses: unsignedapps/swift-create-xcframework@v1.3
 
       # Create a release
       # Upload those artifacts to the release
@@ -137,7 +141,7 @@ jobs:
 You can install using mint:
 
 ```shell
-mint install unsignedapps/swift-create-xcframework@1.0.5
+mint install unsignedapps/swift-create-xcframework@1.3.0
 ```
 
 Or manually:
