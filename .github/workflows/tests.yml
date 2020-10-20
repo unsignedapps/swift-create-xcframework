@@ -1,0 +1,53 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/tests.yml'
+      - '**/*.swift'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/tests.yml'
+      - '**/*.swift'
+
+jobs:
+  tests-xcode-12_2:
+    name: Test Builds - Xcode 12.2
+    runs-on: macOS-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_12.2.app/Contents/Developer
+    
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v2
+
+      - name: 🧱 Build
+        run: make build
+
+  tests-xcode-12:
+    name: Test Builds - Xcode 12
+    runs-on: macOS-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_12.app/Contents/Developer
+    
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v2
+
+      - name: 🧱 Build
+        run: make build
+
+  tests-xcode-11:
+    name: Test Builds - Xcode 11.7
+    runs-on: macOS-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_11.7.app/Contents/Developer
+    
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v2
+
+      - name: 🧱 Build
+        run: make build
