@@ -11,16 +11,16 @@ import TSCUtility
 import Xcodeproj
 
 struct ProjectGenerator {
-    
+
     private enum Constants {
         static let `extension` = "xcodeproj"
     }
 
 
     // MARK: - Properties
-    
+
     let package: PackageInfo
-    
+
     var projectPath: AbsolutePath {
         let dir = AbsolutePath(self.package.projectBuildDirectory.path)
         return buildXcodeprojPath(outputDir: dir, projectName: self.package.package.name)
@@ -28,7 +28,7 @@ struct ProjectGenerator {
 
 
     // MARK: - Initialisation
-    
+
     init (package: PackageInfo) {
         self.package = package
     }

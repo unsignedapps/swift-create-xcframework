@@ -9,13 +9,13 @@ PRODUCT := swift-create-xcframework
 INSTALL_DIR := /usr/local/bin
 
 # Override this on the command line if you need to
-BUILD_FLAGS := 
+BUILD_FLAGS :=
 
 .PHONY: build build-release install install-debug
 
 default: build
 build: build-debug
-	
+
 # Release Builds
 
 build-release: $(wildcard Sources/*/*.swift)

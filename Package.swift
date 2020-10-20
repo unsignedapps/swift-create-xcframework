@@ -10,7 +10,7 @@ let package = Package(
     platforms: [
         .macOS(.v10_15),
     ],
-    
+
     products: [
         .executable(name: "swift-create-xcframework", targets: [ "CreateXCFramework" ]),
     ],

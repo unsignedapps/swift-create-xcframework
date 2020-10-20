@@ -15,12 +15,12 @@ import Workspace
 import Xcodeproj
 
 struct PackageInfo {
-    
+
     // MARK: - Properties
-    
+
     let rootDirectory: Foundation.URL
     let buildDirectory: Foundation.URL
-    
+
     var projectBuildDirectory: Foundation.URL {
         return self.buildDirectory
             .appendingPathComponent("swift-create-xcframework")
@@ -50,22 +50,22 @@ struct PackageInfo {
 
     // TODO: Map diagnostics to swift-log
     let diagnostics = DiagnosticsEngine()
-    
+
     let options: Command.Options
     let package: Package
     let graph: PackageGraph
     let manifest: Manifest
     let toolchain: Toolchain
     let workspace: Workspace
-    
-    
+
+
     // MARJ: - Initialisation
-    
+
     init (options: Command.Options) throws {
         self.options = options
         self.rootDirectory = Foundation.URL(fileURLWithPath: options.packagePath, isDirectory: true).absoluteURL
         self.buildDirectory = self.rootDirectory.appendingPathComponent(options.buildPath, isDirectory: true).absoluteURL
-        
+
         let root = AbsolutePath(self.rootDirectory.path)
 
         self.toolchain = try UserToolchain(destination: try .hostDestination())
@@ -79,9 +79,9 @@ struct PackageInfo {
         self.manifest = try ManifestLoader.loadManifest(packagePath: root, swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: self.toolchain.extraSwiftCFlags, packageKind: .root)
     }
 
-    
+
     // MARK: - Product/Target Names
-    
+
     func validProductNames (project: Xcode.Project) throws -> [String] {
 
         // find our build targets
@@ -94,14 +94,14 @@ struct PackageInfo {
 
         // validation
         guard productNames.isEmpty == false else { throw ValidationError("No products to create frameworks for were found. Add library products to Package.swift or specify products/targets on the command line.") }
-        
+
         let xcodeTargetNames = project.frameworkTargets.map { $0.name }
         let invalidProducts = productNames.filter { xcodeTargetNames.contains($0) == false}
         guard invalidProducts.isEmpty == true else {
-            
+
             let allLibraryProductNames = self.package.manifest.libraryProductNames
             let nonRootPackageTargets = xcodeTargetNames.filter { allLibraryProductNames.contains($0) == false }
-            
+
             throw ValidationError (
                 """
                 Invalid product/target name(s):
@@ -115,10 +115,10 @@ struct PackageInfo {
                 """
             )
         }
-        
+
         return productNames
     }
-    
+
     func printAllProducts (project: Xcode.Project) {
         let allLibraryProductNames = self.package.manifest.libraryProductNames
         let xcodeTargetNames = project.frameworkTargets.map { $0.name }
@@ -135,10 +135,10 @@ struct PackageInfo {
             """
         )
     }
-    
-    
+
+
     // MARK: - Platforms
-    
+
     /// check if our command line platforms are supported by the package definition
     func supportedPlatforms () throws -> [TargetPlatform] {
 
@@ -148,20 +148,20 @@ struct PackageInfo {
         guard let packagePlatforms = self.manifest.platforms.nonEmpty else {
             return supported
         }
-        
+
         // filter our package platforms to make sure everything is supported
         let target = packagePlatforms
             .compactMap { platform -> TargetPlatform? in
                 return supported.first(where: { $0.rawValue == platform.platformName })
             }
-        
+
         // are they different then?
         return target
     }
-    
-    
+
+
     // MARK: - Helpers
-    
+
     private var absoluteRootDirectory: AbsolutePath {
         AbsolutePath(self.rootDirectory.path)
     }
@@ -180,12 +180,12 @@ extension SupportedPlatform: Equatable, Comparable {
     public static func == (lhs: SupportedPlatform, rhs: SupportedPlatform) -> Bool {
         return lhs.platform == rhs.platform && lhs.version == rhs.version
     }
-    
+
     public static func < (lhs: SupportedPlatform, rhs: SupportedPlatform) -> Bool {
         if lhs.platform == rhs.platform {
             return lhs.version < rhs.version
         }
-        
+
         return lhs.platform.name < rhs.platform.name
     }
 }
