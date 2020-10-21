@@ -35,6 +35,7 @@ enum TargetPlatform: String, ExpressibleByArgument, CaseIterable {
     struct SDK {
         let destination: String
         let archiveName: String
+        let releaseFolder: String
         let buildSettings: [String: String]?
     }
 
@@ -42,30 +43,70 @@ enum TargetPlatform: String, ExpressibleByArgument, CaseIterable {
         switch self {
         case .ios:
             return [
-                SDK(destination: "generic/platform=iOS", archiveName: "iphoneos.xcarchive", buildSettings: nil),
-                SDK(destination: "generic/platform=iOS Simulator", archiveName: "iphonesimulator.xcarchive", buildSettings: nil)
+                SDK (
+                    destination: "generic/platform=iOS",
+                    archiveName: "iphoneos.xcarchive",
+                    releaseFolder: "Release-iphoneos",
+                    buildSettings: nil
+                ),
+                SDK (
+                    destination: "generic/platform=iOS Simulator",
+                    archiveName: "iphonesimulator.xcarchive",
+                    releaseFolder: "Release-iphonesimulator",
+                    buildSettings: nil
+                )
             ]
 
         case .macos:
             return [
-                SDK(destination: "platform=macOS", archiveName: "macos.xcarchive", buildSettings: nil)
+                SDK (
+                    destination: "platform=macOS",
+                    archiveName: "macos.xcarchive",
+                    releaseFolder: "Release",
+                    buildSettings: nil
+                )
             ]
 
         case .maccatalyst:
             return [
-                SDK(destination: "platform=macOS,variant=Mac Catalyst", archiveName: "maccatalyst.xcarchive", buildSettings: [ "SUPPORTS_MACCATALYST": "YES" ])
+                SDK (
+                    destination: "platform=macOS,variant=Mac Catalyst",
+                    archiveName: "maccatalyst.xcarchive",
+                    releaseFolder: "Release-maccatalyst",
+                    buildSettings: [ "SUPPORTS_MACCATALYST": "YES" ]
+                )
             ]
 
         case .tvos:
             return [
-                SDK(destination: "generic/platform=tvOS", archiveName: "appletvos.xcarchive", buildSettings: nil),
-                SDK(destination: "generic/platform=tvOS Simulator", archiveName: "appletvsimulator.xcarchive", buildSettings: nil)
+                SDK (
+                    destination: "generic/platform=tvOS",
+                    archiveName: "appletvos.xcarchive",
+                    releaseFolder: "Release-appletvos",
+                    buildSettings: nil
+                ),
+                SDK (
+                    destination: "generic/platform=tvOS Simulator",
+                    archiveName: "appletvsimulator.xcarchive",
+                    releaseFolder: "Release-appletvsimulator",
+                    buildSettings: nil
+                )
             ]
 
         case .watchos:
             return [
-                SDK(destination: "generic/platform=watchOS", archiveName: "watchos.xcarchive", buildSettings: nil),
-                SDK(destination: "generic/platform=watchOS Simulator", archiveName: "watchsimulator.xcarchive", buildSettings: nil)
+                SDK (
+                    destination: "generic/platform=watchOS",
+                    archiveName: "watchos.xcarchive",
+                    releaseFolder: "Release-watchos",
+                    buildSettings: nil
+                ),
+                SDK (
+                    destination: "generic/platform=watchOS Simulator",
+                    archiveName: "watchsimulator.xcarchive",
+                    releaseFolder: "Release-watchsimulator",
+                    buildSettings: nil
+                )
             ]
         }
     }
