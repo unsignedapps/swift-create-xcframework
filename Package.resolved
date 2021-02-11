@@ -6,25 +6,16 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
         "state": {
           "branch": null,
-          "revision": "92646c0cdbaca076c8d3d0207891785b3379cbff",
-          "version": "0.3.1"
-        }
-      },
-      {
-        "package": "swift-driver",
-        "repositoryURL": "https://github.com/apple/swift-driver.git",
-        "state": {
-          "branch": "main",
-          "revision": "ac4af7a1b25a970cc6d38f8b98b10d05b8447faa",
-          "version": null
+          "revision": "9564d61b08a5335ae0a36f789a7d71493eacadfc",
+          "version": "0.3.2"
         }
       },
       {
         "package": "llbuild",
         "repositoryURL": "https://github.com/apple/swift-llbuild.git",
         "state": {
-          "branch": "main",
-          "revision": "8bf47bbacac034fb8bab489aef86de9247574959",
+          "branch": "release/5.3",
+          "revision": "ef2e9ba657fd0a4e6e25fff05051b328bf27aeaf",
           "version": null
         }
       },
@@ -32,8 +23,8 @@
         "package": "SwiftPM",
         "repositoryURL": "https://github.com/apple/swift-package-manager.git",
         "state": {
-          "branch": null,
-          "revision": "5abb16c6ea0657a23bca2660c49ed65465e7cc7a",
+          "branch": "swift-5.3.3-RELEASE",
+          "revision": "06d96d033ffdcbf97b741ed79d62127c4fe419b3",
           "version": null
         }
       },
@@ -41,18 +32,9 @@
         "package": "swift-tools-support-core",
         "repositoryURL": "https://github.com/apple/swift-tools-support-core.git",
         "state": {
-          "branch": "main",
-          "revision": "243beea77d20db46647a3de4765c96e2c801c7c7",
+          "branch": "release/5.3",
+          "revision": "8c3dfd42a36d0416345143eae4567d9314c12246",
           "version": null
-        }
-      },
-      {
-        "package": "Yams",
-        "repositoryURL": "https://github.com/jpsim/Yams.git",
-        "state": {
-          "branch": null,
-          "revision": "88caa2e6fffdbef2e91c2022d038576062042907",
-          "version": "4.0.0"
         }
       }
     ]
