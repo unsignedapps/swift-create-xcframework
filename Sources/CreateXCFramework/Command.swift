@@ -44,6 +44,17 @@ struct Command: ParsableCommand {
         // load all/validate of the package info
         let package = try PackageInfo(options: self.options)
 
+        // validate that package to make sure we can generate it
+        let validation = package.validationErrors()
+        if validation.isEmpty == false {
+            for error in validation {
+                print((error.isFatal ? "Error:" : "Warning:"), error.errorDescription!)
+            }
+            if validation.contains(where: { $0.isFatal }) {
+                Darwin.exit(1)
+            }
+        }
+
         // generate the Xcode project file
         let generator = ProjectGenerator(package: package)
 
@@ -69,7 +80,6 @@ struct Command: ParsableCommand {
 
         // save the project
         try project.save(to: generator.projectPath)
-
 
         // start building
         let builder = XcodeBuilder(project: project, projectPath: generator.projectPath, package: package, options: self.options)
