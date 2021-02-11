@@ -13,6 +13,75 @@ on:
       - '**/*.swift'
 
 jobs:
+  tests-xcode-12_5:
+    name: Test Builds - Xcode 12.5 (Beta)
+    runs-on: macOS-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_12.5.app/Contents/Developer
+    
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v2
+
+      - name: 🧱 Build
+        run: make build-release
+
+      - name: 🚩 Checkout Vexil
+        uses: actions/checkout@v2
+        with:
+          repository: unsignedapps/Vexil
+          ref: v1.2.2
+          path: Vexil
+
+      - name: 📦 Package Vexil
+        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
+
+  tests-xcode-12_4:
+    name: Test Builds - Xcode 12.4
+    runs-on: macOS-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_12.4.app/Contents/Developer
+    
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v2
+
+      - name: 🧱 Build
+        run: make build-release
+
+      - name: 🚩 Checkout Vexil
+        uses: actions/checkout@v2
+        with:
+          repository: unsignedapps/Vexil
+          ref: v1.2.2
+          path: Vexil
+
+      - name: 📦 Package Vexil
+        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
+
+  tests-xcode-12_3:
+    name: Test Builds - Xcode 12.3
+    runs-on: macOS-latest
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_12.3.app/Contents/Developer
+    
+    steps:
+      - name: 🛒 Checkout
+        uses: actions/checkout@v2
+
+      - name: 🧱 Build
+        run: make build-release
+
+      - name: 🚩 Checkout Vexil
+        uses: actions/checkout@v2
+        with:
+          repository: unsignedapps/Vexil
+          ref: v1.2.2
+          path: Vexil
+
+      - name: 📦 Package Vexil
+        run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
+
   tests-xcode-12_2:
     name: Test Builds - Xcode 12.2
     runs-on: macOS-latest
