@@ -39,6 +39,7 @@ struct Command: ParsableCommand {
 
     // MARK: - Execution
 
+    // swiftlint:disable:next function_body_length
     func run() throws {
 
         // load all/validate of the package info

@@ -247,12 +247,14 @@ enum PackageValidationError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .containsBinaryTargets(targets):
-            return "Xcode project generation is not supported by Swift Package Manager for packages that contain binary targets. These binary targets were detected: \(targets.joined(separator: ", "))"
+            return "Xcode project generation is not supported by Swift Package Manager for packages that contain binary targets."
+                + "These binary targets were detected: \(targets.joined(separator: ", "))"
         case let .containsSystemModules(targets):
-            return "Xcode project generation is not supported by Swift Package Manager for packages that reference system modules. These system modules were referenced: \(targets.joined(separator: ", "))"
+            return "Xcode project generation is not supported by Swift Package Manager for packages that reference system modules."
+                + "These system modules were referenced: \(targets.joined(separator: ", "))"
         case let .containsConditionalDependencies(targets):
-            return "Xcode project generation does not support conditional target dependencies, so the generated project may not build successfully. These targets contain conditional dependencies: \(targets.joined(separator: ", "))"
+            return "Xcode project generation does not support conditional target dependencies, so the generated project may not build successfully."
+                + "These targets contain conditional dependencies: \(targets.joined(separator: ", "))"
         }
     }
 }
-
