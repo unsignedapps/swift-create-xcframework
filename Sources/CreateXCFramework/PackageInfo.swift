@@ -70,14 +70,13 @@ struct PackageInfo {
 
         self.toolchain = try UserToolchain(destination: try .hostDestination())
 
-        let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: self.toolchain.extraSwiftCFlags)
+        let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler)
         let loader = ManifestLoader(manifestResources: resources)
         self.workspace = Workspace.create(forRootPackage: root, manifestLoader: loader)
 
         self.package = try PackageBuilder.loadPackage (
             packagePath: root,
             swiftCompiler: self.toolchain.swiftCompiler,
-            swiftCompilerFlags: self.toolchain.extraSwiftCFlags,
             xcTestMinimumDeploymentTargets: [:],
             diagnostics: self.diagnostics
         )
@@ -87,7 +86,6 @@ struct PackageInfo {
         self.manifest = try ManifestLoader.loadManifest (
             packagePath: root,
             swiftCompiler: self.toolchain.swiftCompiler,
-            swiftCompilerFlags: self.toolchain.extraSwiftCFlags,
             packageKind: .root
         )
     }
