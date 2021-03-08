@@ -56,6 +56,14 @@ struct ProjectGenerator {
                 BUILD_LIBRARY_FOR_DISTRIBUTION=YES
                 """
             )
+
+            if package.options.platform.contains(.maccatalyst) {
+                stream (
+                    """
+                    SUPPORTS_MACCATALYST=YES
+                    """
+                )
+            }
         }
     }
 
