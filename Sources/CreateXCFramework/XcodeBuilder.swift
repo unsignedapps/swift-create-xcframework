@@ -115,11 +115,16 @@ struct XcodeBuilder {
             "SKIP_INSTALL=NO"
         ]
 
-        // add any build settings
+        // add SDK-specific build settings
         if let settings = sdk.buildSettings {
             for setting in settings {
                 command.append("\(setting.key)=\(setting.value)")
             }
+        }
+
+        // add build settings provided in the invocation
+        options.xcSetting.forEach { setting in
+            command.append("\(setting.name)=\(setting.value)")
         }
 
         // add our targets
