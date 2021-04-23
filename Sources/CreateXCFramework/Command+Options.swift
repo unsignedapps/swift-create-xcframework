@@ -37,6 +37,9 @@ extension Command {
         @Option(help: "The path to a .xcconfig file that can be used to override Xcode build settings. Relative to the package path.")
         var xcconfig: String?
 
+        @Option(help: ArgumentHelp("Arbitrary Xcode build settings that are passed directly to the `xcodebuild` invocation. Can be specified multiple times.", valueName: "NAME=VALUE"))
+        var xcSetting: [BuildSetting] = []
+
 
         // MARK: - Output Options
 
