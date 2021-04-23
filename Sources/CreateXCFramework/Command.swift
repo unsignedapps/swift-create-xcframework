@@ -27,7 +27,7 @@ struct Command: ParsableCommand {
 
             Supported platforms: \(TargetPlatform.allCases.map({ $0.rawValue }).joined(separator: ", "))
             """,
-        version: "1.3.0"
+        version: "1.3.1"
     )
 
 

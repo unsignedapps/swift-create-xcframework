@@ -141,7 +141,7 @@ jobs:
 You can install using mint:
 
 ```shell
-mint install unsignedapps/swift-create-xcframework@v1.3.0
+mint install unsignedapps/swift-create-xcframework
 ```
 
 Or manually:
