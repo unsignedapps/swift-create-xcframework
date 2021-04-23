@@ -130,7 +130,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Create XCFramework
-        uses: unsignedapps/swift-create-xcframework@v1.3
+        uses: unsignedapps/swift-create-xcframework@v1.4
 
       # Create a release
       # Upload those artifacts to the release
