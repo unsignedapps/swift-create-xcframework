@@ -112,7 +112,8 @@ struct XcodeBuilder {
             "-archivePath", self.buildDirectory.appendingPathComponent(self.productName(target: target)).appendingPathComponent(sdk.archiveName).path,
             "-destination", sdk.destination,
             "BUILD_DIR=\(self.buildDirectory.path)",
-            "SKIP_INSTALL=NO"
+            "SKIP_INSTALL=NO",
+            "BUILD_LIBRARIES_FOR_DISTRIBUTION=YES"
         ]
 
         // add SDK-specific build settings
