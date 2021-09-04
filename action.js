@@ -4,7 +4,7 @@ const path = require('path')
 const artifact = require('././.action/artifact')
 const fs = require('fs')
 
-const scxVersion = '1.4.1'
+const scxVersion = '1.4.0'
 const outputPath = '.build/xcframework-zipfile.url'
 
 core.setCommandEcho(true)
@@ -94,7 +94,7 @@ async function installUsingMintIfRequired (command, package) {
 
     } else {
         core.info("Installing " + package)
-        await exec.exec('mint', [ 'install', 'mz2/swift-create-xcframework@' + scxVersion ])
+        await exec.exec('mint', [ 'install', 'unsignedapps/swift-create-xcframework@' + scxVersion ])
     }
 }
 
