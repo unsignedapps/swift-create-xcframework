@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -16,9 +16,9 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("0.3.2")),
-        .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .revision("swift-5.3.3-RELEASE")),
-        .package(url: "https://github.com/apple/swift-tools-support-core.git", .exact("0.1.12")),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("0.4.4")),
+        .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.5")),
+        .package(url: "https://github.com/apple/swift-tools-support-core.git", .exact("0.2.3")),
     ],
 
     targets: [
