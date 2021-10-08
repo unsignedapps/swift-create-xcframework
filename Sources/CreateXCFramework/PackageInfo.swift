@@ -70,19 +70,32 @@ struct PackageInfo {
 
         self.toolchain = try UserToolchain(destination: try .hostDestination())
 
-        let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: [])
+        let resources: UserManifestResources
+        #if swift(>=5.5)
+            resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: [])
+        #else
+            resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler)
+        #endif
         let loader = ManifestLoader(manifestResources: resources)
         self.workspace = Workspace.create(forRootPackage: root, manifestLoader: loader)
-
-        self.graph = try self.workspace.loadPackageGraph(rootPath: root, diagnostics: self.diagnostics)
-
-        self.manifest = try tsc_await { ManifestLoader.loadRootManifest(at: root,
-                                                                        swiftCompiler: root,
-                                                                        swiftCompilerFlags: [],
-                                                                        identityResolver: DefaultIdentityResolver(),
-                                                                        on: .main,
-                                                                        completion: $0)
-        }
+        
+        #if swift(>=5.5)
+            self.graph = try self.workspace.loadPackageGraph(rootPath: root, diagnostics: self.diagnostics)
+            self.manifest = try tsc_await { ManifestLoader.loadRootManifest(at: root,
+                                                                            swiftCompiler: root,
+                                                                            swiftCompilerFlags: [],
+                                                                            identityResolver: DefaultIdentityResolver(),
+                                                                            on: .main,
+                                                                            completion: $0)
+            }
+        #else
+            self.graph = self.workspace.loadPackageGraph(root: root, diagnostics: self.diagnostics)
+            self.manifest = try ManifestLoader.loadManifest (
+                packagePath: root,
+                swiftCompiler: self.toolchain.swiftCompiler,
+                packageKind: .root
+            )
+        #endif
     }
 
 
