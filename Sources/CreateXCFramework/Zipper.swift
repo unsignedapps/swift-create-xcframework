@@ -74,7 +74,7 @@ struct Zipper {
         guard let packageRef = self.package.graph.packages.first(where: { $0.targets.contains(where: { $0.name == target }) }) else { return nil }
 
         guard
-            let dependency = self.package.workspace.state.dependencies[forNameOrIdentity: packageRef.name],
+            let dependency = self.package.workspace.state.dependencies[forNameOrIdentity: packageRef.manifestName],
             case let .checkout(checkout) = dependency.state,
             let version = checkout.version
         else {

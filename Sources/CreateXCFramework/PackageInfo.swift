@@ -216,7 +216,7 @@ enum SupportedPlatforms {
     case packageValid (plan: [SupportedPlatform])
 }
 
-extension SupportedPlatform: Equatable, Comparable {
+extension SupportedPlatform: Comparable {
     public static func == (lhs: SupportedPlatform, rhs: SupportedPlatform) -> Bool {
         return lhs.platform == rhs.platform && lhs.version == rhs.version
     }
