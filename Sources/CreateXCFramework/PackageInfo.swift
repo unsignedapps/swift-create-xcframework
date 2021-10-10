@@ -81,11 +81,12 @@ struct PackageInfo {
         
         #if swift(>=5.5)
             self.graph = try self.workspace.loadPackageGraph(rootPath: root, diagnostics: self.diagnostics)
+            let swiftCompiler = toolchain.swiftCompiler
             self.manifest = try tsc_await { ManifestLoader.loadRootManifest(at: root,
-                                                                            swiftCompiler: root,
+                                                                            swiftCompiler: swiftCompiler,
                                                                             swiftCompilerFlags: [],
                                                                             identityResolver: DefaultIdentityResolver(),
-                                                                            on: .main,
+                                                                            on: DispatchQueue.global(qos: .background),
                                                                             completion: $0)
             }
         #else
