@@ -14,7 +14,7 @@ on:
 
 jobs:
   tests-xcode-12_5:
-    name: Test Builds - Xcode 12.5 (Beta)
+    name: Test Builds - Xcode 12.5
     runs-on: macos-11.0
     env:
       DEVELOPER_DIR: /Applications/Xcode_12.5.1.app/Contents/Developer
