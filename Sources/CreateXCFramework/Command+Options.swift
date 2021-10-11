@@ -46,7 +46,7 @@ extension Command {
         @Option (
             help: ArgumentHelp (
                 "A list of platforms you want to build for. Can be specified multiple times."
-                    + " Default is to build for all platforms supported in your Package.swift, or all Apple platforms if omitted",
+                    + " Default is to build for all platforms supported in your Package.swift, or all Apple platforms (except for maccatalyst platform) if omitted",
                 valueName: TargetPlatform.allCases.map({ $0.rawValue }).joined(separator: "|")
             )
         )
