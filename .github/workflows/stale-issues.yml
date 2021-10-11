@@ -1,0 +1,13 @@
+name: Close stale issues and PRs
+on:
+  schedule:
+    - cron: '30 1 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v4
+        with:
+          stale-issue-message: This issue has been marked stale as it has not been updated in 60 days. It will be closed in one week. It can be re-opened at any time.
+          stale-pr-message: This PR has been marked stale as it has not been updated in 60 days. It will be closed in one week. It can be re-opened at any time.
