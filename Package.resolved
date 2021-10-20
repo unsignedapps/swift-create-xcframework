@@ -6,16 +6,34 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
         "state": {
           "branch": null,
-          "revision": "9564d61b08a5335ae0a36f789a7d71493eacadfc",
-          "version": "0.3.2"
+          "revision": "83b23d940471b313427da226196661856f6ba3e0",
+          "version": "0.4.4"
+        }
+      },
+      {
+        "package": "swift-crypto",
+        "repositoryURL": "https://github.com/apple/swift-crypto.git",
+        "state": {
+          "branch": null,
+          "revision": "3bea268b223651c4ab7b7b9ad62ef9b2d4143eb6",
+          "version": "1.1.6"
+        }
+      },
+      {
+        "package": "swift-driver",
+        "repositoryURL": "https://github.com/apple/swift-driver.git",
+        "state": {
+          "branch": "release/5.5",
+          "revision": "ba0ab62cfc3999fb47fcfa33f046677008d9b145",
+          "version": null
         }
       },
       {
         "package": "llbuild",
         "repositoryURL": "https://github.com/apple/swift-llbuild.git",
         "state": {
-          "branch": "release/5.3",
-          "revision": "ef2e9ba657fd0a4e6e25fff05051b328bf27aeaf",
+          "branch": "release/5.5",
+          "revision": "b5d9b4a9995c05688ae5f3b87a0d7ac0dc45c6c6",
           "version": null
         }
       },
@@ -23,8 +41,8 @@
         "package": "SwiftPM",
         "repositoryURL": "https://github.com/apple/swift-package-manager.git",
         "state": {
-          "branch": "swift-5.3.3-RELEASE",
-          "revision": "06d96d033ffdcbf97b741ed79d62127c4fe419b3",
+          "branch": "release/5.5",
+          "revision": "96c347b1419e513291f07c988f3e995363d400ed",
           "version": null
         }
       },
@@ -32,9 +50,18 @@
         "package": "swift-tools-support-core",
         "repositoryURL": "https://github.com/apple/swift-tools-support-core.git",
         "state": {
-          "branch": "release/5.3",
-          "revision": "8c3dfd42a36d0416345143eae4567d9314c12246",
+          "branch": "release/5.5",
+          "revision": "1b21e2ce36891ed4f458421a83b5d9e886acd4cd",
           "version": null
+        }
+      },
+      {
+        "package": "Yams",
+        "repositoryURL": "https://github.com/jpsim/Yams.git",
+        "state": {
+          "branch": null,
+          "revision": "9ff1cc9327586db4e0c8f46f064b6a82ec1566fa",
+          "version": "4.0.6"
         }
       }
     ]
