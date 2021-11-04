@@ -38,6 +38,10 @@ struct ProjectGenerator {
 
     /// Writes out the Xcconfig file
     func writeDistributionXcconfig () throws {
+        guard self.package.hasDistributionBuildXcconfig else {
+            return
+        }
+
         try makeDirectories(self.projectPath)
 
         let path = AbsolutePath(self.package.distributionBuildXcconfig.path)
@@ -56,14 +60,6 @@ struct ProjectGenerator {
                 BUILD_LIBRARY_FOR_DISTRIBUTION=YES
                 """
             )
-
-            if package.options.platform.contains(.maccatalyst) {
-                stream (
-                    """
-                    SUPPORTS_MACCATALYST=YES
-                    """
-                )
-            }
         }
     }
 

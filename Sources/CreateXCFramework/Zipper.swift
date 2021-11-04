@@ -74,7 +74,7 @@ struct Zipper {
         guard let packageRef = self.package.graph.packages.first(where: { $0.targets.contains(where: { $0.name == target }) }) else { return nil }
 
         guard
-            let dependency = self.package.workspace.state.dependencies[forNameOrIdentity: packageRef.name],
+            let dependency = self.package.workspace.state.dependencies[forNameOrIdentity: packageRef.packageName],
             case let .checkout(checkout) = dependency.state,
             let version = checkout.version
         else {
@@ -91,3 +91,17 @@ struct Zipper {
         try FileManager.default.removeItem(at: file)
     }
 }
+
+#if swift(>=5.5)
+private extension ResolvedPackage {
+    var packageName: String {
+        self.manifestName
+    }
+}
+#else
+private extension ResolvedPackage {
+    var packageName: String {
+        self.name
+    }
+}
+#endif

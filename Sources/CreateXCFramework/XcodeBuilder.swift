@@ -122,8 +122,13 @@ struct XcodeBuilder {
             }
         }
 
+        // enable evolution for the whole stack
+        if self.options.stackEvolution {
+            command.append("BUILD_LIBRARY_FOR_DISTRIBUTION=YES")
+        }
+
         // add build settings provided in the invocation
-        options.xcSetting.forEach { setting in
+        self.options.xcSetting.forEach { setting in
             command.append("\(setting.name)=\(setting.value)")
         }
 
