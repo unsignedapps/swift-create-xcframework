@@ -27,6 +27,10 @@ struct PackageInfo {
             .absoluteURL
     }
 
+    var hasDistributionBuildXcconfig: Bool {
+        self.overridesXcconfig != nil || self.options.stackEvolution == false
+    }
+
     var distributionBuildXcconfig: Foundation.URL {
         return self.projectBuildDirectory
             .appendingPathComponent("Distribution.xcconfig")
@@ -232,7 +236,7 @@ enum SupportedPlatforms {
     case packageValid (plan: [SupportedPlatform])
 }
 
-extension SupportedPlatform: Equatable, Comparable {
+extension SupportedPlatform: Comparable {
     public static func == (lhs: SupportedPlatform, rhs: SupportedPlatform) -> Bool {
         return lhs.platform == rhs.platform && lhs.version == rhs.version
     }
