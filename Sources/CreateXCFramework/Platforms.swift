@@ -60,7 +60,7 @@ enum TargetPlatform: String, ExpressibleByArgument, CaseIterable {
         case .macos:
             return [
                 SDK (
-                    destination: "platform=macOS",
+                    destination: "generic/platform=macOS,name=Any Mac",
                     archiveName: "macos.xcarchive",
                     releaseFolder: "Release",
                     buildSettings: nil
@@ -70,7 +70,7 @@ enum TargetPlatform: String, ExpressibleByArgument, CaseIterable {
         case .maccatalyst:
             return [
                 SDK (
-                    destination: "platform=macOS,variant=Mac Catalyst",
+                    destination: "generic/platform=macOS,variant=Mac Catalyst",
                     archiveName: "maccatalyst.xcarchive",
                     releaseFolder: "Release-maccatalyst",
                     buildSettings: [ "SUPPORTS_MACCATALYST": "YES" ]
