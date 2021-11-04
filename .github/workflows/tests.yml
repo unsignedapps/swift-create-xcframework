@@ -41,7 +41,7 @@ jobs:
         run: cd Vexil && ../.build/release/swift-create-xcframework --zip --zip-version 1.2.2 --platform ios --platform macos --platform tvos --platform watchos
 
   tests-xcode-macos10_15:
-    name: Test Builds - Xcode 12.3
+    name: Test Builds - macOS 10.15
     runs-on: macos-10.15
     strategy:
       matrix:
