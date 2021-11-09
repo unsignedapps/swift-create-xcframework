@@ -19,6 +19,9 @@ extension Command {
 
         // MARK: - Building
 
+        @Flag(help: "Use the legacy (v1 and v2) build system. This uses SwiftPM's deprecated Xcode project generation and allows you to build any target in the package graph.")
+        var legacy = false
+
         @Option(help: ArgumentHelp("The location of the build/cache directory to use", valueName: "directory"))
         var buildPath = ".build"
 

@@ -56,6 +56,25 @@ struct Command: ParsableCommand {
             }
         }
 
+        // using the legacy generation
+        if self.options.legacy {
+            try self.runLegacy(package: package)
+            return
+        }
+
+        // printing packages?
+        if self.options.listProducts {
+            package.printAllProducts()
+            Darwin.exit(0)
+        }
+
+        // validate product names
+        let productNames = try package.validProductNames()
+        print(productNames)
+    }
+
+    func runLegacy(package: PackageInfo) throws {
+
         // generate the Xcode project file
         let generator = ProjectGenerator(package: package)
 
@@ -67,12 +86,12 @@ struct Command: ParsableCommand {
 
         // printing packages?
         if self.options.listProducts {
-            package.printAllProducts(project: project)
+            package.printAllLegacyProducts(project: project)
             Darwin.exit(0)
         }
 
         // get valid packages and their SDKs
-        let productNames = try package.validProductNames(project: project)
+        let productNames = try package.validLegacyProductNames(project: project)
         let sdks = platforms.flatMap { $0.sdks }
 
         // we've applied the xcconfig to everything, but some dependencies (*cough* swift-nio)

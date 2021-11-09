@@ -22,6 +22,7 @@ build-release: $(wildcard Sources/*/*.swift)
 	swift build $(BUILD_FLAGS) --configuration release
 
 install: build-release
+	rm $(INSTALL_DIR)/$(PRODUCT)
 	cp .build/release/swift-create-xcframework $(INSTALL_DIR)/$(PRODUCT)
 	touch -c $(INSTALL_DIR)/$(PRODUCT)
 

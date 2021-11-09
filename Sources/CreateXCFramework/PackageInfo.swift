@@ -135,7 +135,45 @@ struct PackageInfo {
 
     // MARK: - Product/Target Names
 
-    func validProductNames (project: Xcode.Project) throws -> [String] {
+    func validProductNames() throws -> [String] {
+        guard self.manifest.dynamicLibraryProductNames.isEmpty == false else {
+            throw ValidationError(
+                """
+                No supported dynamic library products were found in Package.swift.
+
+                Unsupported products:
+                    \(self.manifest.unsupportedProducts.map({ $0.printDescription }).sorted().joined(separator: "\n    "))
+                """
+            )
+        }
+
+        let productNames = self.options.products
+
+        // Build everything
+        guard productNames.isEmpty == false else {
+            return self.manifest.dynamicLibraryProductNames
+        }
+
+        // check for invalid names
+        let invalid = productNames.filter { self.manifest.dynamicLibraryProductNames.contains($0) == false }
+        guard invalid.isEmpty == true else {
+            throw ValidationError (
+                """
+                Invalid product/target name(s):
+                    \(invalid.joined(separator: "\n    "))
+
+                Supported products:
+                    \(self.manifest.dynamicLibraryProductNames.sorted().joined(separator: "\n    "))
+
+                Unsupported products:
+                    \(self.manifest.unsupportedProducts.map({ $0.printDescription }).sorted().joined(separator: "\n    "))
+                """
+            )
+        }
+        return productNames
+    }
+
+    func validLegacyProductNames (project: Xcode.Project) throws -> [String] {
 
         // find our build targets
         let productNames: [String]
@@ -177,15 +215,29 @@ struct PackageInfo {
         return productNames
     }
 
-    func printAllProducts (project: Xcode.Project) {
-        let allLibraryProductNames = self.manifest.libraryProductNames
-        let xcodeTargetNames = project.frameworkTargets.map { $0.name }
-        let nonRootPackageTargets = xcodeTargetNames.filter { allLibraryProductNames.contains($0) == false }
+    func printAllProducts () {
+        let products = self.manifest.dynamicLibraryProductNames
+
+        print (
+            """
+            \nSupported products:
+                \(products.sorted().joined(separator: "\n    "))
+
+            Unsupported products:
+                \(self.manifest.unsupportedProducts.map({ $0.printDescription }).sorted().joined(separator: "\n    "))
+            """
+        )
+    }
+
+    func printAllLegacyProducts (project: Xcode.Project) {
+        let products = self.manifest.libraryProductNames
+        let targets = project.frameworkTargets.map({ $0.name })
+        let nonRootPackageTargets = targets.filter { products.contains($0) == false }
 
         print (
             """
             \nAvailable \(self.manifest.name) products:
-                \(allLibraryProductNames.sorted().joined(separator: "\n    "))
+                \(products.sorted().joined(separator: "\n    "))
 
             Additional available targets:
                 \(nonRootPackageTargets.sorted().joined(separator: "\n    "))

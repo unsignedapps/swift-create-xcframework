@@ -14,6 +14,13 @@ extension ProductType {
         }
         return false
     }
+
+    var isDynamicLibrary: Bool {
+        if case .library(let type) = self {
+            return type == .dynamic
+        }
+        return false
+    }
 }
 
 extension Manifest {
@@ -23,5 +30,20 @@ extension Manifest {
                 guard product.type.isLibrary else { return nil }
                 return product.name
             }
+    }
+
+    var dynamicLibraryProductNames: [String] {
+        return self.supportedProducts
+            .map { $0.name }
+    }
+
+    var supportedProducts: [ProductDescription] {
+        return self.products
+            .filter { $0.type.isDynamicLibrary }
+    }
+
+    var unsupportedProducts: [ProductDescription] {
+        return self.products
+            .filter { $0.type.isDynamicLibrary == false }
     }
 }
