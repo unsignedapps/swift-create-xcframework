@@ -32,6 +32,7 @@ build-debug: $(wildcard Sources/*/*.swift)
 	swift build $(BUILD_FLAGS) --configuration debug
 
 install-debug: build-debug
+	rm $(INSTALL_DIR)/$(PRODUCT)
 	cp .build/debug/swift-create-xcframework $(INSTALL_DIR)/$(PRODUCT)
 	touch -c $(INSTALL_DIR)/$(PRODUCT)
 

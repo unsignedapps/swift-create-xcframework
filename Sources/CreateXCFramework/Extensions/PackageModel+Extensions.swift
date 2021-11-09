@@ -24,6 +24,11 @@ extension ProductType {
 }
 
 extension Manifest {
+    var allProductNames: [String] {
+        return self.products
+            .map { $0.name }
+    }
+
     var libraryProductNames: [String] {
         return self.products
             .compactMap { product in
@@ -32,7 +37,7 @@ extension Manifest {
             }
     }
 
-    var dynamicLibraryProductNames: [String] {
+    var supportedProductNames: [String] {
         return self.supportedProducts
             .map { $0.name }
     }

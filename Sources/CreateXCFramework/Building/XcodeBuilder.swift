@@ -61,14 +61,15 @@ struct XcodeBuilder {
     // MARK: - Build
 
     func build (targets: [String], sdk: TargetPlatform.SDK) throws -> [String: BuildResult] {
-        for target in targets {
-            let command = self.options.legacy
-                ? try self.legacyBuildCommand(target: target, sdk: sdk)
-                : try self.buildCommand(target: target, sdk: sdk)
 
-            let process = TSCBasic.Process(arguments: command, outputRedirection: .none)
-            try process.launch()
-            try process.waitUntilCleanExit()
+        // is our list of targets the same as everything included in the package? Just build the scheme as a shortcut
+        if Set(targets) == Set(self.package.manifest.allProductNames) {
+            try self.buildTarget(self.package.schemeName, sdk: sdk)
+
+        } else {
+            for target in targets {
+                try self.buildTarget(target, sdk: sdk)
+            }
         }
 
         return targets
@@ -79,6 +80,16 @@ struct XcodeBuilder {
                     debugSymbolsPath: self.debugSymbolsPath(target: name, sdk: sdk)
                 )
             }
+    }
+
+    private func buildTarget (_ target: String, sdk: TargetPlatform.SDK) throws {
+        let command = self.options.legacy
+            ? try self.legacyBuildCommand(target: target, sdk: sdk)
+            : try self.buildCommand(target: target, sdk: sdk)
+
+        let process = TSCBasic.Process(arguments: command, outputRedirection: .none)
+        try process.launch()
+        try process.waitUntilCleanExit()
     }
 
     private func buildCommand (target: String, sdk: TargetPlatform.SDK) throws -> [String] {

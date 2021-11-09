@@ -52,6 +52,10 @@ struct PackageInfo {
         return self.rootDirectory.appendingPathComponent(path)
     }
 
+    var schemeName: String {
+        self.manifest.name + "-Package"
+    }
+
     // TODO: Map diagnostics to swift-log
     let diagnostics = DiagnosticsEngine()
 
@@ -136,7 +140,7 @@ struct PackageInfo {
     // MARK: - Product/Target Names
 
     func validProductNames() throws -> [String] {
-        guard self.manifest.dynamicLibraryProductNames.isEmpty == false else {
+        guard self.manifest.supportedProductNames.isEmpty == false else {
             throw ValidationError(
                 """
                 No supported dynamic library products were found in Package.swift.
@@ -151,11 +155,11 @@ struct PackageInfo {
 
         // Build everything
         guard productNames.isEmpty == false else {
-            return self.manifest.dynamicLibraryProductNames
+            return self.manifest.supportedProductNames
         }
 
         // check for invalid names
-        let invalid = productNames.filter { self.manifest.dynamicLibraryProductNames.contains($0) == false }
+        let invalid = productNames.filter { self.manifest.supportedProductNames.contains($0) == false }
         guard invalid.isEmpty == true else {
             throw ValidationError (
                 """
@@ -163,7 +167,7 @@ struct PackageInfo {
                     \(invalid.joined(separator: "\n    "))
 
                 Supported products:
-                    \(self.manifest.dynamicLibraryProductNames.sorted().joined(separator: "\n    "))
+                    \(self.manifest.supportedProductNames.sorted().joined(separator: "\n    "))
 
                 Unsupported products:
                     \(self.manifest.unsupportedProducts.map({ $0.printDescription }).sorted().joined(separator: "\n    "))
@@ -216,7 +220,7 @@ struct PackageInfo {
     }
 
     func printAllProducts () {
-        let products = self.manifest.dynamicLibraryProductNames
+        let products = self.manifest.supportedProductNames
 
         print (
             """
