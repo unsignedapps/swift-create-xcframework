@@ -36,17 +36,7 @@ struct Zipper {
 
         print("\nPackaging \(file.path) into \(zipURL.path)\n\n")
         try process.launch()
-        let result = try process.waitUntilExit()
-
-        switch result.exitStatus {
-        case let .terminated(code: code):
-            if code != 0 {
-                throw XcodeBuilder.Error.nonZeroExit("ditto", code)
-            }
-        case let .signalled(signal: signal):
-            throw XcodeBuilder.Error.signalExit("ditto", signal)
-        }
-
+        try process.waitUntilCleanExit()
         return zipURL
     }
 

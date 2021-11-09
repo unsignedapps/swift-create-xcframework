@@ -70,15 +70,30 @@ struct Command: ParsableCommand {
 
         // validate product names
         let productNames = try package.validProductNames()
-        print(productNames)
+
+        // get package and SDK info
+        let platforms = try package.supportedPlatforms()
+        let sdks = platforms.flatMap { $0.sdks }
+
+        // start building
+        let builder = XcodeBuilder(package: package, options: self.options)
+
+        let frameworks = try self.build(products: productNames, sdks: sdks, builder: builder)
+        let xcframeworks = try self.createXCFrameworks(frameworks: frameworks, builder: builder)
+
+        if self.options.zip {
+            let zipped = try self.zip(xcframeworks: xcframeworks, package: package)
+
+            if self.options.githubAction {
+                try self.githubNotify(zippedXCFrameworks: zipped)
+            }
+        }
     }
 
     func runLegacy(package: PackageInfo) throws {
 
         // generate the Xcode project file
         let generator = ProjectGenerator(package: package)
-
-        let platforms = try package.supportedPlatforms()
 
         // get what we're building
         try generator.writeDistributionXcconfig()
@@ -92,7 +107,8 @@ struct Command: ParsableCommand {
 
         // get valid packages and their SDKs
         let productNames = try package.validLegacyProductNames(project: project)
-        let sdks = platforms.flatMap { $0.sdks }
+        let sdks = try package.supportedPlatforms()
+            .flatMap { $0.sdks }
 
         // we've applied the xcconfig to everything, but some dependencies (*cough* swift-nio)
         // have build errors, so we remove it from targets we're not building
@@ -104,56 +120,75 @@ struct Command: ParsableCommand {
         try project.save(to: generator.projectPath)
 
         // start building
-        let builder = XcodeBuilder(project: project, projectPath: generator.projectPath, package: package, options: self.options)
+        let builder = XcodeBuilder(projectPath: generator.projectPath, package: package, options: self.options)
 
-        // clean first
         if self.options.clean {
             try builder.clean()
         }
 
-        // all of our targets for each platform, then group the resulting .frameworks by target
-        var frameworkFiles: [String: [XcodeBuilder.BuildResult]] = [:]
+        let frameworks = try self.build(products: productNames, sdks: sdks, builder: builder)
+        let xcframeworks = try self.createXCFrameworks(frameworks: frameworks, builder: builder)
 
-        for sdk in sdks {
-            try builder.build(targets: productNames, sdk: sdk)
-                .forEach { pair in
-                    if frameworkFiles[pair.key] == nil {
-                        frameworkFiles[pair.key] = []
-                    }
-                    frameworkFiles[pair.key]?.append(pair.value)
-                }
-        }
-
-        var xcframeworkFiles: [(String, Foundation.URL)] = []
-
-        // then we merge the resulting frameworks
-        try frameworkFiles
-            .forEach { pair in
-                xcframeworkFiles.append((pair.key, try builder.merge(target: pair.key, buildResults: pair.value)))
-            }
-
-        // zip it up if thats what they want
         if self.options.zip {
-            let zipper = Zipper(package: package)
-            let zipped = try xcframeworkFiles
-                .flatMap { pair -> [Foundation.URL] in
-                    let zip = try zipper.zip(target: pair.0, version: self.options.zipVersion, file: pair.1)
-                    let checksum = try zipper.checksum(file: zip)
-                    try zipper.clean(file: pair.1)
+            let zipped = try self.zip(xcframeworks: xcframeworks, package: package)
 
-                    return [ zip, checksum ]
-                }
-
-            // notify the action if we have one
             if self.options.githubAction {
-                let zips = zipped.map({ $0.path }).joined(separator: "\n")
-                let data = Data(zips.utf8)
-                let url = Foundation.URL(fileURLWithPath: self.options.buildPath).appendingPathComponent("xcframework-zipfile.url")
-                try data.write(to: url)
+                try self.githubNotify(zippedXCFrameworks: zipped)
             }
-
         }
     }
+
+    private func build (products: [String], sdks: [TargetPlatform.SDK], builder: XcodeBuilder) throws -> [String: [BuildResult]] {
+        var frameworks: [String: [BuildResult]] = [:]
+
+        for sdk in sdks {
+            try builder.build(targets: products, sdk: sdk)
+                .forEach { pair in
+                    if frameworks[pair.key] == nil {
+                        frameworks[pair.key] = []
+                    }
+                    frameworks[pair.key]?.append(pair.value)
+                }
+        }
+
+        return frameworks
+    }
+
+    struct XCFramework {
+        let target: String
+        let xcframework: Foundation.URL
+    }
+
+    private func createXCFrameworks (frameworks: [String: [BuildResult]], builder: XcodeBuilder) throws -> [XCFramework] {
+        return try frameworks
+            .map { pair in
+                XCFramework(
+                    target: pair.key,
+                    xcframework: try builder.merge(target: pair.key, buildResults: pair.value)
+                )
+            }
+    }
+
+    private func zip (xcframeworks: [XCFramework], package: PackageInfo) throws -> [Foundation.URL] {
+        let zipper = Zipper(package: package)
+        let zipped = try xcframeworks
+            .flatMap { pair -> [Foundation.URL] in
+                let zip = try zipper.zip(target: pair.target, version: self.options.zipVersion, file: pair.xcframework)
+                let checksum = try zipper.checksum(file: zip)
+                try zipper.clean(file: pair.xcframework)
+
+                return [ zip, checksum ]
+            }
+        return zipped
+    }
+
+    private func githubNotify (zippedXCFrameworks: [Foundation.URL]) throws {
+        let zips = zippedXCFrameworks.map({ $0.path }).joined(separator: "\n")
+        let data = Data(zips.utf8)
+        let url = Foundation.URL(fileURLWithPath: self.options.buildPath).appendingPathComponent("xcframework-zipfile.url")
+        try data.write(to: url)
+    }
+
 }
 
 

@@ -1,5 +1,5 @@
 //
-//  XcodeBuilder.swift
+//  LegacyBuilder.swift
 //  swift-create-xcframework
 //
 //  Created by Rob Amos on 7/5/20.
@@ -16,8 +16,7 @@ struct XcodeBuilder {
 
     // MARK: - Properties
 
-    let path: AbsolutePath
-    let project: Xcode.Project
+    let path: AbsolutePath?
     let package: PackageInfo
     let options: Command.Options
 
@@ -29,8 +28,7 @@ struct XcodeBuilder {
 
     // MARK: - Initialisation
 
-    init (project: Xcode.Project, projectPath: AbsolutePath, package: PackageInfo, options: Command.Options) {
-        self.project = project
+    init (projectPath: AbsolutePath? = nil, package: PackageInfo, options: Command.Options) {
         self.path = projectPath
         self.package = package
         self.options = options
@@ -40,11 +38,15 @@ struct XcodeBuilder {
     // MARK: - Clean
 
     func clean () throws {
+        guard let path = path else {
+            throw Error.legacyRequired
+        }
+
         let process = TSCBasic.Process (
             arguments: [
                 "xcrun",
                 "xcodebuild",
-                "-project", self.path.pathString,
+                "-project", path.pathString,
                 "BUILD_DIR=\(self.buildDirectory.path)",
                 "clean"
             ],
@@ -52,45 +54,21 @@ struct XcodeBuilder {
         )
 
         try process.launch()
-        let result = try process.waitUntilExit()
-
-        switch result.exitStatus {
-        case let .terminated(code: code):
-            if code != 0 {
-                throw Error.nonZeroExit("xcodebuild", code)
-            }
-        case let .signalled(signal: signal):
-            throw Error.signalExit("xcodebuild", signal)
-        }
+        try process.waitUntilCleanExit()
     }
 
 
     // MARK: - Build
 
-    struct BuildResult {
-        let target: String
-        let frameworkPath: Foundation.URL
-        let debugSymbolsPath: Foundation.URL
-    }
-
     func build (targets: [String], sdk: TargetPlatform.SDK) throws -> [String: BuildResult] {
         for target in targets {
-            let process = TSCBasic.Process (
-                arguments: try self.buildCommand(target: target, sdk: sdk),
-                outputRedirection: .none
-            )
+            let command = self.options.legacy
+                ? try self.legacyBuildCommand(target: target, sdk: sdk)
+                : try self.buildCommand(target: target, sdk: sdk)
 
+            let process = TSCBasic.Process(arguments: command, outputRedirection: .none)
             try process.launch()
-            let result = try process.waitUntilExit()
-
-            switch result.exitStatus {
-            case let .terminated(code: code):
-                if code != 0 {
-                    throw Error.nonZeroExit("xcodebuild", code)
-                }
-            case let .signalled(signal: signal):
-                throw Error.signalExit("xcodebuild", signal)
-            }
+            try process.waitUntilCleanExit()
         }
 
         return targets
@@ -107,7 +85,53 @@ struct XcodeBuilder {
         var command: [String] = [
             "xcrun",
             "xcodebuild",
-            "-project", self.path.pathString,
+            "-workspace", self.package.rootDirectory.path,
+            "-configuration", self.options.configuration.xcodeConfigurationName,
+            "-archivePath", self.buildDirectory.appendingPathComponent(self.productName(target: target)).appendingPathComponent(sdk.archiveName).path,
+            "-destination", sdk.destination,
+            "BUILD_DIR=\(self.buildDirectory.path)",
+            "SKIP_INSTALL=NO",
+            "BUILD_LIBRARY_FOR_DISTRIBUTION=YES",
+        ]
+
+        // add SDK-specific build settings
+        if let settings = sdk.buildSettings {
+            for setting in settings {
+                command.append("\(setting.key)=\(setting.value)")
+            }
+        }
+
+        if let xcconfig = self.options.xcconfig {
+            command += [ "-xcconfig", xcconfig ]
+        }
+
+        // add build settings provided in the invocation
+        self.options.xcSetting.forEach { setting in
+            command.append("\(setting.name)=\(setting.value)")
+        }
+
+        // add our targets
+        command += [ "-scheme", target ]
+
+        // clean first?
+        if self.options.clean {
+            command += [ "clean" ]
+        }
+
+        // and the command
+        command += [ "archive" ]
+
+        return command
+    }
+
+    private func legacyBuildCommand (target: String, sdk: TargetPlatform.SDK) throws -> [String] {
+        guard let path = self.path else {
+            throw Error.legacyRequired
+        }
+        var command: [String] = [
+            "xcrun",
+            "xcodebuild",
+            "-project", path.pathString,
             "-configuration", self.options.configuration.xcodeConfigurationName,
             "-archivePath", self.buildDirectory.appendingPathComponent(self.productName(target: target)).appendingPathComponent(sdk.archiveName).path,
             "-destination", sdk.destination,
@@ -143,6 +167,20 @@ struct XcodeBuilder {
 
     // we should probably pull this from the build output but we just make assumptions here
     private func frameworkPath (target: String, sdk: TargetPlatform.SDK) -> Foundation.URL {
+        if self.options.legacy {
+            return self.legacyFrameworkPath(target: target, sdk: sdk)
+        }
+
+        return self.buildDirectory
+            .appendingPathComponent(self.productName(target: target))
+            .appendingPathComponent(sdk.archiveName)
+            .appendingPathComponent("Products/usr/local/lib")
+            .appendingPathComponent("\(self.productName(target: target)).framework")
+            .absoluteURL
+    }
+
+    // we should probably pull this from the build output but we just make assumptions here
+    private func legacyFrameworkPath (target: String, sdk: TargetPlatform.SDK) -> Foundation.URL {
         return self.buildDirectory
             .appendingPathComponent(self.productName(target: target))
             .appendingPathComponent(sdk.archiveName)
@@ -213,17 +251,7 @@ struct XcodeBuilder {
         )
 
         try process.launch()
-        let result = try process.waitUntilExit()
-
-        switch result.exitStatus {
-        case let .terminated(code: code):
-            if code != 0 {
-                throw Error.nonZeroExit("dwarfdump", code)
-            }
-
-        case let .signalled(signal: signal):
-            throw Error.signalExit("dwarfdump", signal)
-        }
+        let result = try process.waitUntilCleanExit()
 
         switch result.output {
         case let .success(output):
@@ -252,16 +280,7 @@ struct XcodeBuilder {
         )
 
         try process.launch()
-        let result = try process.waitUntilExit()
-
-        switch result.exitStatus {
-        case let .terminated(code: code):
-            if code != 0 {
-                throw Error.nonZeroExit("xcodebuild", code)
-            }
-        case let .signalled(signal: signal):
-            throw Error.signalExit("xcodebuild", signal)
-        }
+        try process.waitUntilCleanExit()
 
         return outputPath
     }
@@ -314,18 +333,15 @@ struct XcodeBuilder {
     // MARK: - Errors
 
     enum Error: Swift.Error, LocalizedError {
-        case nonZeroExit(String, Int32)
-        case signalExit(String, Int32)
         case errorThrown(String, Swift.Error)
+        case legacyRequired
 
         var errorDescription: String? {
             switch self {
-            case let .nonZeroExit(command, code):
-                return "\(command) exited with a non-zero code: \(code)"
-            case let .signalExit(command, signal):
-                return "\(command) exited due to signal: \(signal)"
             case let .errorThrown(command, error):
                 return "\(command) returned unexpected error: \(error)"
+            case .legacyRequired:
+                return "Attempting to build using something that requires the --legacy option."
             }
         }
     }
