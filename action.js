@@ -4,7 +4,7 @@ const path = require('path')
 const artifact = require('././.action/artifact')
 const fs = require('fs')
 
-const scxVersion = '2.1.0'
+const scxVersion = 'v2.1.0'
 const outputPath = '.build/xcframework-zipfile.url'
 
 core.setCommandEcho(true)
