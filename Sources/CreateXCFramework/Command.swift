@@ -23,7 +23,7 @@ struct Command: ParsableCommand {
             """
             Note that Swift Binary Frameworks (XCFramework) support is only available in Swift 5.1
             or newer, and so it is only supported by recent versions of Xcode and the *OS SDKs. Likewise,
-            only Apple pplatforms are supported.
+            only Apple platforms are supported.
 
             Supported platforms: \(TargetPlatform.allCases.map({ $0.rawValue }).joined(separator: ", "))
             """,
