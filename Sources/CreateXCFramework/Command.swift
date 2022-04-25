@@ -113,27 +113,27 @@ struct Command: ParsableCommand {
                 xcframeworkFiles.append((pair.key, try builder.merge(target: pair.key, buildResults: pair.value)))
             }
 
-        // zip it up if thats what they want
-        if self.options.zip {
-            let zipper = Zipper(package: package)
-            let zipped = try xcframeworkFiles
-                .flatMap { pair -> [Foundation.URL] in
-                    let zip = try zipper.zip(target: pair.0, version: self.options.zipVersion, file: pair.1)
-                    let checksum = try zipper.checksum(file: zip)
-                    try zipper.clean(file: pair.1)
-
-                    return [ zip, checksum ]
-                }
-
-            // notify the action if we have one
-            if self.options.githubAction {
-                let zips = zipped.map({ $0.path }).joined(separator: "\n")
-                let data = Data(zips.utf8)
-                let url = Foundation.URL(fileURLWithPath: self.options.buildPath).appendingPathComponent("xcframework-zipfile.url")
-                try data.write(to: url)
-            }
-
-        }
+//        // zip it up if thats what they want
+//        if self.options.zip {
+//            let zipper = Zipper(package: package)
+//            let zipped = try xcframeworkFiles
+//                .flatMap { pair -> [Foundation.URL] in
+//                    let zip = try zipper.zip(target: pair.0, version: self.options.zipVersion, file: pair.1)
+//                    let checksum = try zipper.checksum(file: zip)
+//                    try zipper.clean(file: pair.1)
+//
+//                    return [ zip, checksum ]
+//                }
+//
+//            // notify the action if we have one
+//            if self.options.githubAction {
+//                let zips = zipped.map({ $0.path }).joined(separator: "\n")
+//                let data = Data(zips.utf8)
+//                let url = Foundation.URL(fileURLWithPath: self.options.buildPath).appendingPathComponent("xcframework-zipfile.url")
+//                try data.write(to: url)
+//            }
+//
+//        }
     }
 }
 

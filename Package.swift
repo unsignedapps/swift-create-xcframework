@@ -6,8 +6,8 @@ import PackageDescription
 let dependencies: [Package.Dependency]
 #if swift(>=5.5)
 dependencies = [
-    .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("0.4.4")),
-    .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.5")),
+    .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("1.0.1")),
+    .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.6")),
     .package(url: "https://github.com/apple/swift-tools-support-core.git", .exact("0.2.3"))
 ]
 #else
@@ -23,7 +23,7 @@ let package = Package(
 
     // TODO: Add Linux / Windows support
     platforms: [
-        .macOS(.v10_15),
+        .macOS(.v11),
     ],
 
     products: [

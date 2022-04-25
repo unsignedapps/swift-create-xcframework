@@ -9,6 +9,7 @@ import Foundation
 import TSCBasic
 import TSCUtility
 import Xcodeproj
+import Basics
 
 struct ProjectGenerator {
 
@@ -23,7 +24,7 @@ struct ProjectGenerator {
 
     var projectPath: AbsolutePath {
         let dir = AbsolutePath(self.package.projectBuildDirectory.path)
-        return buildXcodeprojPath(outputDir: dir, projectName: self.package.manifest.name)
+        return buildXcodeprojPath(outputDir: dir, projectName: self.package.manifest.displayName)
     }
 
 
@@ -71,6 +72,9 @@ struct ProjectGenerator {
         let path = self.projectPath
         try makeDirectories(path)
 
+//        let observabilitySystem = ObservabilitySystem() { (scope: ObservabilityScope, diagnostic: Basics.Diagnostic) -> Void in
+//
+//        }
         // Generate the contents of project.xcodeproj (inside the .xcodeproj).
         let project = try pbxproj (
             xcodeprojPath: path,
@@ -81,7 +85,8 @@ struct ProjectGenerator {
                 xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { AbsolutePath($0) },
                 useLegacySchemeGenerator: true
             ),
-            diagnostics: self.package.diagnostics
+            fileSystem: localFileSystem,
+            observabilityScope: ObservabilitySystem(diagnosticEngine: package.diagnostics).topScope
         )
 
         return project
@@ -122,7 +127,12 @@ extension Xcode.Project {
         try open(path.appending(component: "project.pbxproj")) { stream in
             // Serialize the project model we created to a plist, and return
             // its string description.
-            let str = "// !$*UTF8*$!\n" + self.generatePlist().description
+            let propertyList = try? self.generatePlist()
+            var str = "// !$*UTF8*$!\n"
+            if let propertyList = propertyList {
+                str = str + propertyList.description
+            }
+            print("Serialize the project model/(str)")
             stream(str)
         }
 

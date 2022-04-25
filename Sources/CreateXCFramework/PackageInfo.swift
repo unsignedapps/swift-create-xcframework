@@ -13,6 +13,8 @@ import PackageModel
 import SPMBuildCore
 import Workspace
 import Xcodeproj
+import TSCBasic
+import PackageGraph
 
 struct PackageInfo {
 
@@ -59,7 +61,7 @@ struct PackageInfo {
 //    let package: Package
     let graph: PackageGraph
     let manifest: Manifest
-    let toolchain: Toolchain
+    let toolchain: UserToolchain
     let workspace: Workspace
 
 
@@ -75,12 +77,12 @@ struct PackageInfo {
         self.toolchain = try UserToolchain(destination: try .hostDestination())
 
         #if swift(>=5.5)
-        let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: [])
+        let resources = ToolchainConfiguration(swiftCompilerPath: self.toolchain.swiftCompilerPath)
         #else
         let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler)
         #endif
-        let loader = ManifestLoader(manifestResources: resources)
-        self.workspace = Workspace.create(forRootPackage: root, manifestLoader: loader)
+        let loader = ManifestLoader(toolchain: resources)
+        self.workspace = try Workspace.init(forRootPackage: root, customManifestLoader: loader)
         
         #if swift(>=5.5)
         self.graph = try self.workspace.loadPackageGraph(rootPath: root, diagnostics: self.diagnostics)
@@ -165,7 +167,7 @@ struct PackageInfo {
                 Invalid product/target name(s):
                     \(invalidProducts.joined(separator: "\n    "))
 
-                Available \(self.manifest.name) products:
+                Available \(self.manifest.displayName) products:
                     \(allLibraryProductNames.sorted().joined(separator: "\n    "))
 
                 Additional available targets:
@@ -184,7 +186,7 @@ struct PackageInfo {
 
         print (
             """
-            \nAvailable \(self.manifest.name) products:
+            \nAvailable \(self.manifest.displayName) products:
                 \(allLibraryProductNames.sorted().joined(separator: "\n    "))
 
             Additional available targets:
