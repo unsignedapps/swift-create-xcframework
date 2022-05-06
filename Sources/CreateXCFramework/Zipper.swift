@@ -52,10 +52,17 @@ struct Zipper {
     }
 
     func checksum (file: Foundation.URL) throws -> Foundation.URL {
+#if swift(>=5.5)
         let sum = try self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path))
         let checksumFile = file.deletingPathExtension().appendingPathExtension("sha256")
         try Data(sum.utf8).write(to: checksumFile)
         return checksumFile
+#else
+        let sum = self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path), diagnostics: self.package.diagnostics)
+        let checksumFile = file.deletingPathExtension().appendingPathExtension("sha256")
+        try Data(sum.utf8).write(to: checksumFile)
+        return checksumFile
+#endif
     }
 
     private func zipCommand (source: Foundation.URL, target: Foundation.URL) -> [String] {
@@ -101,13 +108,7 @@ struct Zipper {
     }
 }
 
-#if swift(>=5.5)
-private extension ResolvedPackage {
-//    var packageName: String {
-//        self.identity
-//    }
-}
-#else
+#if swift(<5.5)
 private extension ResolvedPackage {
     var packageName: String {
         self.name

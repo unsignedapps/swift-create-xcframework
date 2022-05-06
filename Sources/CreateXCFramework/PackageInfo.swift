@@ -78,12 +78,14 @@ struct PackageInfo {
 
         #if swift(>=5.5)
         let resources = ToolchainConfiguration(swiftCompilerPath: self.toolchain.swiftCompilerPath)
-        #else
-        let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler)
-        #endif
         let loader = ManifestLoader(toolchain: resources)
         self.workspace = try Workspace.init(forRootPackage: root, customManifestLoader: loader)
-        
+        #else
+        let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler)
+        let loader = ManifestLoader(manifestResources: resources)
+        self.workspace = Workspace.create(forRootPackage: root, manifestLoader: loader)
+        #endif
+
         #if swift(>=5.5)
         self.graph = try self.workspace.loadPackageGraph(rootPath: root, diagnostics: self.diagnostics)
         let swiftCompiler = toolchain.swiftCompiler

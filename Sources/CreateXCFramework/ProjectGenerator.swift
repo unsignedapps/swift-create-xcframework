@@ -71,10 +71,7 @@ struct ProjectGenerator {
     func generate () throws -> Xcode.Project {
         let path = self.projectPath
         try makeDirectories(path)
-
-//        let observabilitySystem = ObservabilitySystem() { (scope: ObservabilityScope, diagnostic: Basics.Diagnostic) -> Void in
-//
-//        }
+#if swift(>=5.5)
         // Generate the contents of project.xcodeproj (inside the .xcodeproj).
         let project = try pbxproj (
             xcodeprojPath: path,
@@ -88,8 +85,22 @@ struct ProjectGenerator {
             fileSystem: localFileSystem,
             observabilityScope: ObservabilitySystem(diagnosticEngine: package.diagnostics).topScope
         )
-
         return project
+#else
+        // Generate the contents of project.xcodeproj (inside the .xcodeproj).
+        let project = try pbxproj (
+            xcodeprojPath: path,
+            graph: self.package.graph,
+            extraDirs: [],
+            extraFiles: [],
+            options: XcodeprojOptions (
+                xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { AbsolutePath($0) },
+                useLegacySchemeGenerator: true
+            ),
+            diagnostics: self.package.diagnostics
+        )
+        return project
+#endif
     }
 
 }
@@ -127,6 +138,7 @@ extension Xcode.Project {
         try open(path.appending(component: "project.pbxproj")) { stream in
             // Serialize the project model we created to a plist, and return
             // its string description.
+#if swift(>=5.5)
             let propertyList = try? self.generatePlist()
             var str = "// !$*UTF8*$!\n"
             if let propertyList = propertyList {
@@ -134,6 +146,12 @@ extension Xcode.Project {
             }
             print("Serialize the project model/(str)")
             stream(str)
+#else
+            let str = "// !$*UTF8*$!\n" + self.generatePlist().description
+            print("Serialize the project model/(str)")
+            stream(str)
+
+#endif
         }
 
         for target in self.frameworkTargets {
