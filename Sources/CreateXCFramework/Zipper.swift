@@ -6,7 +6,9 @@
 //
 
 import Foundation
+#if swift(>=5.6)
 import PackageGraph
+#endif
 import PackageModel
 import TSCBasic
 import Workspace
