@@ -63,7 +63,7 @@ struct PackageInfo {
 
     // TODO: Map diagnostics to swift-log
 #if swift(>=5.6)
-    let observabilitySystem = ObservabilitySystem { scope, diagnostics in
+    let observabilitySystem = ObservabilitySystem { _, diagnostics in
         print("\(diagnostics.severity): \(diagnostics.message)")
     }
 #else
@@ -79,7 +79,7 @@ struct PackageInfo {
 
     // MARK: - Initialisation
 
-    init (options: Command.Options) throws {
+    init (options: Command.Options) throws { // swiftlint:disable:this function_body_length
         self.options = options
         self.rootDirectory = Foundation.URL(fileURLWithPath: options.packagePath, isDirectory: true).absoluteURL
         self.buildDirectory = self.rootDirectory.appendingPathComponent(options.buildPath, isDirectory: true).absoluteURL
