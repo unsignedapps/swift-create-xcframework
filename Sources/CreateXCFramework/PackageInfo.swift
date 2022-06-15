@@ -6,14 +6,20 @@
 //
 
 import ArgumentParser
+#if swift(>=5.6)
 import Basics
+#endif
 import Build
 import Foundation
+#if swift(>=5.6)
 import PackageGraph
+#endif
 import PackageLoading
 import PackageModel
 import SPMBuildCore
+#if swift(>=5.6)
 import TSCBasic
+#endif
 import Workspace
 import Xcodeproj
 
