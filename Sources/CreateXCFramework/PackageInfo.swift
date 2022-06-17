@@ -6,11 +6,20 @@
 //
 
 import ArgumentParser
+#if swift(>=5.6)
+import Basics
+#endif
 import Build
 import Foundation
+#if swift(>=5.6)
+import PackageGraph
+#endif
 import PackageLoading
 import PackageModel
 import SPMBuildCore
+#if swift(>=5.6)
+import TSCBasic
+#endif
 import Workspace
 import Xcodeproj
 
@@ -53,19 +62,24 @@ struct PackageInfo {
     }
 
     // TODO: Map diagnostics to swift-log
+#if swift(>=5.6)
+    let observabilitySystem = ObservabilitySystem { _, diagnostics in
+        print("\(diagnostics.severity): \(diagnostics.message)")
+    }
+#else
     let diagnostics = DiagnosticsEngine()
+#endif
 
     let options: Command.Options
-//    let package: Package
     let graph: PackageGraph
     let manifest: Manifest
-    let toolchain: Toolchain
+    let toolchain: UserToolchain
     let workspace: Workspace
 
 
     // MARK: - Initialisation
 
-    init (options: Command.Options) throws {
+    init (options: Command.Options) throws { // swiftlint:disable:this function_body_length
         self.options = options
         self.rootDirectory = Foundation.URL(fileURLWithPath: options.packagePath, isDirectory: true).absoluteURL
         self.buildDirectory = self.rootDirectory.appendingPathComponent(options.buildPath, isDirectory: true).absoluteURL
@@ -74,6 +88,11 @@ struct PackageInfo {
 
         self.toolchain = try UserToolchain(destination: try .hostDestination())
 
+        #if swift(>=5.6)
+        let resources = ToolchainConfiguration(swiftCompilerPath: self.toolchain.swiftCompilerPath)
+        let loader = ManifestLoader(toolchain: resources)
+        self.workspace = try Workspace(forRootPackage: root, customManifestLoader: loader)
+        #else
         #if swift(>=5.5)
         let resources = try UserManifestResources(swiftCompiler: self.toolchain.swiftCompiler, swiftCompilerFlags: [])
         #else
@@ -81,8 +100,20 @@ struct PackageInfo {
         #endif
         let loader = ManifestLoader(manifestResources: resources)
         self.workspace = Workspace.create(forRootPackage: root, manifestLoader: loader)
-        
-        #if swift(>=5.5)
+        #endif
+
+        #if swift(>=5.6)
+        self.graph = try workspace.loadPackageGraph(rootPath: root, observabilityScope: self.observabilitySystem.topScope)
+        let workspace = self.workspace
+        let scope = observabilitySystem.topScope
+        self.manifest = try tsc_await {
+            workspace.loadRootManifest(
+                at: root,
+                observabilityScope: scope,
+                completion: $0
+            )
+        }
+        #elseif swift(>=5.5)
         self.graph = try self.workspace.loadPackageGraph(rootPath: root, diagnostics: self.diagnostics)
         let swiftCompiler = toolchain.swiftCompiler
         self.manifest = try tsc_await {
@@ -165,7 +196,7 @@ struct PackageInfo {
                 Invalid product/target name(s):
                     \(invalidProducts.joined(separator: "\n    "))
 
-                Available \(self.manifest.name) products:
+                Available \(self.manifest.displayName) products:
                     \(allLibraryProductNames.sorted().joined(separator: "\n    "))
 
                 Additional available targets:
@@ -184,7 +215,7 @@ struct PackageInfo {
 
         print (
             """
-            \nAvailable \(self.manifest.name) products:
+            \nAvailable \(self.manifest.displayName) products:
                 \(allLibraryProductNames.sorted().joined(separator: "\n    "))
 
             Additional available targets:
@@ -280,3 +311,11 @@ enum PackageValidationError: LocalizedError {
         }
     }
 }
+
+#if swift(<5.6)
+extension Manifest {
+    var displayName: String {
+        name
+    }
+}
+#endif

@@ -23,7 +23,7 @@ struct ProjectGenerator {
 
     var projectPath: AbsolutePath {
         let dir = AbsolutePath(self.package.projectBuildDirectory.path)
-        return buildXcodeprojPath(outputDir: dir, projectName: self.package.manifest.name)
+        return buildXcodeprojPath(outputDir: dir, projectName: self.package.manifest.displayName)
     }
 
 
@@ -72,6 +72,20 @@ struct ProjectGenerator {
         try makeDirectories(path)
 
         // Generate the contents of project.xcodeproj (inside the .xcodeproj).
+#if swift(>=5.6)
+        let project = try pbxproj (
+            xcodeprojPath: path,
+            graph: self.package.graph,
+            extraDirs: [],
+            extraFiles: [],
+            options: XcodeprojOptions (
+                xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { AbsolutePath($0) },
+                useLegacySchemeGenerator: true
+            ),
+            fileSystem: localFileSystem,
+            observabilityScope: self.package.observabilitySystem.topScope
+        )
+#else
         let project = try pbxproj (
             xcodeprojPath: path,
             graph: self.package.graph,
@@ -83,6 +97,7 @@ struct ProjectGenerator {
             ),
             diagnostics: self.package.diagnostics
         )
+#endif
 
         return project
     }
@@ -122,7 +137,11 @@ extension Xcode.Project {
         try open(path.appending(component: "project.pbxproj")) { stream in
             // Serialize the project model we created to a plist, and return
             // its string description.
+#if swift(>=5.6)
+            let str = try "// !$*UTF8*$!\n" + self.generatePlist().description
+#else
             let str = "// !$*UTF8*$!\n" + self.generatePlist().description
+#endif
             stream(str)
         }
 

@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if swift(>=5.6)
+import PackageGraph
+#endif
 import PackageModel
 import TSCBasic
 import Workspace
@@ -51,7 +54,11 @@ struct Zipper {
     }
 
     func checksum (file: Foundation.URL) throws -> Foundation.URL {
+#if swift(>=5.6)
+        let sum = try self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path))
+#else
         let sum = self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path), diagnostics: self.package.diagnostics)
+#endif
         let checksumFile = file.deletingPathExtension().appendingPathExtension("sha256")
         try Data(sum.utf8).write(to: checksumFile)
         return checksumFile
@@ -73,6 +80,14 @@ struct Zipper {
         // find the package that contains our target
         guard let packageRef = self.package.graph.packages.first(where: { $0.targets.contains(where: { $0.name == target }) }) else { return nil }
 
+#if swift(>=5.6)
+        guard
+            let dependency = self.package.workspace.state.dependencies[packageRef.identity],
+            case let .custom(version, _) = dependency.state
+        else {
+            return fallback.flatMap { "-" + $0 }
+        }
+#else
         guard
             let dependency = self.package.workspace.state.dependencies[forNameOrIdentity: packageRef.packageName],
             case let .checkout(checkout) = dependency.state,
@@ -80,6 +95,7 @@ struct Zipper {
         else {
             return fallback.flatMap { "-" + $0 }
         }
+#endif
 
         return "-" + version.description
     }
@@ -92,7 +108,9 @@ struct Zipper {
     }
 }
 
-#if swift(>=5.5)
+#if swift(>=5.6)
+// Intentionally left blank
+#elseif swift(>=5.5)
 private extension ResolvedPackage {
     var packageName: String {
         self.manifestName
