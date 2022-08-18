@@ -5,6 +5,7 @@
 //  Created by Rob Amos on 13/5/20.
 //
 
+import Basics
 import Foundation
 #if swift(>=5.6)
 import PackageGraph
@@ -12,7 +13,6 @@ import PackageGraph
 import PackageModel
 import TSCBasic
 import Workspace
-import Basics
 
 struct Zipper {
 
