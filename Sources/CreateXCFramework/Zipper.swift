@@ -5,7 +5,9 @@
 //  Created by Rob Amos on 13/5/20.
 //
 
+#if canImport(Basics)
 import Basics
+#endif
 import Foundation
 #if swift(>=5.6)
 import PackageGraph
