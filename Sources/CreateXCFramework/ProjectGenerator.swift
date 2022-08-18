@@ -23,7 +23,7 @@ struct ProjectGenerator {
 
     var projectPath: AbsolutePath {
         let dir = AbsolutePath(self.package.projectBuildDirectory.path)
-        return buildXcodeprojPath(outputDir: dir, projectName: self.package.manifest.displayName)
+        return XcodeProject.makePath(outputDir: dir, projectName: self.package.manifest.displayName)
     }
 
 

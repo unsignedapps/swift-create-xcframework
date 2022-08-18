@@ -88,7 +88,10 @@ struct PackageInfo {
 
         self.toolchain = try UserToolchain(destination: try .hostDestination())
 
-        #if swift(>=5.6)
+        #if swift(>=5.7)
+        let loader = ManifestLoader(toolchain: self.toolchain)
+        self.workspace = try Workspace(forRootPackage: root, customManifestLoader: loader)
+        #elseif swift(>=5.6)
         let resources = ToolchainConfiguration(swiftCompilerPath: self.toolchain.swiftCompilerPath)
         let loader = ManifestLoader(toolchain: resources)
         self.workspace = try Workspace(forRootPackage: root, customManifestLoader: loader)
