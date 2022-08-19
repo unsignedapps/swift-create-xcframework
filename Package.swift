@@ -4,7 +4,13 @@
 import PackageDescription
 
 let dependencies: [Package.Dependency]
-#if swift(>=5.6)
+#if swift(>=5.7)
+dependencies = [
+    .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("1.0.3")),
+    .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.7")),
+    .package(url: "https://github.com/apple/swift-tools-support-core.git", .branch("release/5.7")),
+]
+#elseif swift(>=5.6)
 dependencies = [
     .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("1.0.3")),
     .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.6")),

@@ -5,6 +5,9 @@
 //  Created by Rob Amos on 13/5/20.
 //
 
+#if canImport(Basics)
+import Basics
+#endif
 import Foundation
 #if swift(>=5.6)
 import PackageGraph
@@ -54,7 +57,9 @@ struct Zipper {
     }
 
     func checksum (file: Foundation.URL) throws -> Foundation.URL {
-#if swift(>=5.6)
+#if swift(>=5.7)
+        let sum = try checksum(forBinaryArtifactAt: AbsolutePath(file.path))
+#elseif swift(>=5.6)
         let sum = try self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path))
 #else
         let sum = self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path), diagnostics: self.package.diagnostics)
@@ -106,6 +111,28 @@ struct Zipper {
     func clean (file: Foundation.URL) throws {
         try FileManager.default.removeItem(at: file)
     }
+
+    #if swift(>=5.7)
+    private func checksum(forBinaryArtifactAt path: AbsolutePath) throws -> String {
+        let fileSystem = localFileSystem
+        let checksumAlgorithm = SHA256()
+        let archiver = ZipArchiver(fileSystem: fileSystem)
+
+        // Validate the path has a supported extension.
+        guard let pathExtension = path.extension, archiver.supportedExtensions.contains(pathExtension) else {
+            let supportedExtensionList = archiver.supportedExtensions.joined(separator: ", ")
+            throw StringError("unexpected file type; supported extensions are: \(supportedExtensionList)")
+        }
+
+        // Ensure that the path with the accepted extension is a file.
+        guard fileSystem.isFile(path) else {
+            throw StringError("file not found at path: \(path.pathString)")
+        }
+
+        let contents = try fileSystem.readFileContents(path)
+        return checksumAlgorithm.hash(contents).hexadecimalRepresentation
+    }
+    #endif
 }
 
 #if swift(>=5.6)
