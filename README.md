@@ -48,12 +48,13 @@ var package = Package(
 )
 ```
 
-By default swift-create-xcframework will build `ExampleGenerator.xcframework` that supports: macosx, iphoneos, iphonesimulator. Additional `.library` products would be built automatically as well.
+By default swift-create-xcframework will build `ExampleGenerator.xcframework` that supports: _macosx_, _iphoneos_, _iphonesimulator_. Additional `.library` products would be built automatically as well.
 
 ### Choosing Platforms
 
-You can narrow down what gets built
-If you omit the platforms specification, we'll build for all platforms that support Swift Binary Frameworks, which at the time of writing is just the Apple SDKs: macosx, iphoneos, iphonesimulator, watchos, watchsimulator, appletvos, appletvsimulator.
+You can narrow down what gets built.
+
+If you omit the platforms specification, we'll build for all platforms that support Swift Binary Frameworks, which at the time of writing is just the Apple SDKs: _macosx, iphoneos, iphonesimulator, watchos, watchsimulator, appletvos, appletvsimulator_.
 
 **Note:** Because only Apple's platforms are supported at this time, swift-create-xcframework will ignore Linux and other platforms in the Package.swift.
 
@@ -65,7 +66,7 @@ swift create-xcframework --platform ios --platform macos ...
 
 #### Catalyst
 
-You can build your XCFrameworks with support for Mac Catalyst by specifying `--platform maccatalyst` on the command line. As you can't include or exclude Catalyst support in your `Package.swift` we don't try to build it automatically.
+You can build your `XCFrameworks` with support for Mac Catalyst by specifying `--platform maccatalyst` on the command line. As you can't include or exclude Catalyst support in your `Package.swift` we don't try to build it automatically.
 
 ### Choosing Products
 
