@@ -66,7 +66,7 @@ swift create-xcframework --platform ios --platform macos ...
 
 #### Catalyst
 
-You can build your `XCFrameworks` with support for Mac Catalyst by specifying `--platform maccatalyst` on the command line. As you can't include or exclude Catalyst support in your `Package.swift` we don't try to build it automatically.
+You can build your XCFrameworks with support for Mac Catalyst by specifying `--platform maccatalyst` on the command line. As you can't include or exclude Catalyst support in your `Package.swift` we don't try to build it automatically.
 
 ### Choosing Products
 
