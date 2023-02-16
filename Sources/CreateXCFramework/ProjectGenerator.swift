@@ -103,6 +103,10 @@ struct ProjectGenerator {
         )
 #endif
 
+        for target in project.targets {
+            target.buildSettings.release.ENABLE_TESTABILITY = "NO"
+        }
+
         return project
     }
 
