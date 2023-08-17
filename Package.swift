@@ -4,7 +4,13 @@
 import PackageDescription
 
 let dependencies: [Package.Dependency]
-#if swift(>=5.7)
+#if swift(>=5.9)
+dependencies = [
+    .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("1.2.3")),
+    .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.9")),
+    .package(url: "https://github.com/apple/swift-tools-support-core.git", .branch("release/5.9")),
+]
+#elseif swift(>=5.7)
 dependencies = [
     .package(url: "https://github.com/apple/swift-argument-parser.git", .exact("1.0.3")),
     .package(name: "SwiftPM", url: "https://github.com/apple/swift-package-manager.git", .branch("release/5.7")),
@@ -54,7 +60,15 @@ let package = Package(
     dependencies: dependencies,
 
     targets: [
+        .target(
+            name: "Xcodeproj",
+            dependencies: [
+                .product(name: "SwiftPM-auto", package: "SwiftPM"),
+                .product(name: "SwiftToolsSupport-auto", package: "swift-tools-support-core"),
+            ]
+        ),
         .target(name: "CreateXCFramework", dependencies: [
+            "Xcodeproj",
             .product(name: "ArgumentParser", package: "swift-argument-parser"),
             .product(name: "SwiftPM-auto", package: "SwiftPM"),
             .product(name: "SwiftToolsSupport-auto", package: "swift-tools-support-core"),
