@@ -10,6 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.9)
+
 import Basics
 import TSCBasic
 import PackageGraph
@@ -896,3 +898,5 @@ func appendSetting(
         throw InternalError("Unhandled decl \(decl)")
     }
 }
+
+#endif

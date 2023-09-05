@@ -10,6 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.9)
+
 import TSCBasic
 import PackageGraph
 import PackageModel
@@ -309,3 +311,5 @@ func legacySchemeGenerator(container: String, graph: PackageGraph, codeCoverageE
         </Scheme>
         """)
 }
+
+#endif

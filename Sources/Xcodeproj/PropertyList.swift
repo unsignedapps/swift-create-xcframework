@@ -10,6 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.9)
+
 /// A enum representing data types for legacy PropertyList type.
 /// Note that the `identifier` enum is not strictly necessary,
 /// but useful to semantically distinguish the strings that
@@ -148,3 +150,5 @@ extension PropertyList {
         }
     }
 }
+
+#endif

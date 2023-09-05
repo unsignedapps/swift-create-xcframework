@@ -10,6 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.9)
+
 /*
  An extemely simple rendition of the Xcode project model into a plist.  There
  is only enough functionality to allow serialization of Xcode projects.
@@ -643,3 +645,5 @@ extension PropertyList {
         }
     }
 }
+
+#endif

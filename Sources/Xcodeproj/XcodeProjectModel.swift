@@ -10,6 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.9)
+
 /*
  A very simple rendition of the Xcode project model.  There is only sufficient
  functionality to allow creation of Xcode projects in a somewhat readable way,
@@ -517,3 +519,5 @@ public func += (lhs: inout [String]?, rhs: [String]) {
         lhs = lhs! + rhs
     }
 }
+
+#endif

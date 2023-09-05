@@ -10,6 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if swift(>=5.9)
+
 import Basics
 import PackageGraph
 import PackageModel
@@ -335,3 +337,5 @@ public enum XcodeProject {
         }) ?? []
     }
 }
+
+#endif
