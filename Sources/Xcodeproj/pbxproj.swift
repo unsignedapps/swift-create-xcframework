@@ -429,7 +429,7 @@ public func xcodeProject(
 
         // Assign the deployment target if the package is using the newer manifest version.
         if package.manifest.toolsVersion >= .v5 {
-            for supportedPlatform in target.platforms.derived {
+            for supportedPlatform in target.platforms.declared {
                 let version = supportedPlatform.version.versionString
                 switch supportedPlatform.platform {
                 case .macOS:

@@ -21,10 +21,10 @@ struct ProjectGenerator {
 
     let package: PackageInfo
 
-    var projectPath: AbsolutePath {
-        let dir = AbsolutePath(self.package.projectBuildDirectory.path)
+    func projectPath() throws -> AbsolutePath {
+        let dir = try AbsolutePath(validating: self.package.projectBuildDirectory.path)
         #if swift(>=5.7)
-        return XcodeProject.makePath(outputDir: dir, projectName: self.package.manifest.displayName)
+        return try XcodeProject.makePath(outputDir: dir, projectName: self.package.manifest.displayName)
         #else
         return buildXcodeprojPath(outputDir: dir, projectName: self.package.manifest.displayName)
         #endif
@@ -46,14 +46,14 @@ struct ProjectGenerator {
             return
         }
 
-        try makeDirectories(self.projectPath)
+        try makeDirectories(self.projectPath())
 
-        let path = AbsolutePath(self.package.distributionBuildXcconfig.path)
+        let path = try AbsolutePath(validating: self.package.distributionBuildXcconfig.path)
         try open(path) { stream in
             if let absolutePath = self.package.overridesXcconfig?.path {
                 stream (
                     """
-                    #include "\(AbsolutePath(absolutePath).relative(to: AbsolutePath(path.dirname)).pathString)"
+                    #include "\(try AbsolutePath(validating: absolutePath).relative(to: AbsolutePath(validating: path.dirname)).pathString)"
 
                     """
                 )
@@ -72,7 +72,7 @@ struct ProjectGenerator {
     /// This is basically a copy of Xcodeproj.generate()
     ///
     func generate () throws -> Xcode.Project {
-        let path = self.projectPath
+        let path = try self.projectPath()
         try makeDirectories(path)
 
         // Generate the contents of project.xcodeproj (inside the .xcodeproj).
@@ -83,7 +83,7 @@ struct ProjectGenerator {
             extraDirs: [],
             extraFiles: [],
             options: XcodeprojOptions (
-                xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { AbsolutePath($0) },
+                xcconfigOverrides: (self.package.overridesXcconfig?.path).flatMap { try AbsolutePath(validating: $0) },
                 useLegacySchemeGenerator: true
             ),
             fileSystem: localFileSystem,

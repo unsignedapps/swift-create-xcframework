@@ -78,14 +78,14 @@ struct Command: ParsableCommand {
         // we've applied the xcconfig to everything, but some dependencies (*cough* swift-nio)
         // have build errors, so we remove it from targets we're not building
         if self.options.stackEvolution == false {
-            try project.enableDistribution(targets: productNames, xcconfig: AbsolutePath(package.distributionBuildXcconfig.path).relative(to: AbsolutePath(package.rootDirectory.path)))
+            try project.enableDistribution(targets: productNames, xcconfig: AbsolutePath(validating: package.distributionBuildXcconfig.path).relative(to: AbsolutePath(validating: package.rootDirectory.path)))
         }
 
         // save the project
-        try project.save(to: generator.projectPath)
+        try project.save(to: try generator.projectPath())
 
         // start building
-        let builder = XcodeBuilder(project: project, projectPath: generator.projectPath, package: package, options: self.options)
+        let builder = XcodeBuilder(project: project, projectPath: try generator.projectPath(), package: package, options: self.options)
 
         // clean first
         if self.options.clean {

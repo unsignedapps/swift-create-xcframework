@@ -58,7 +58,7 @@ struct Zipper {
 
     func checksum (file: Foundation.URL) throws -> Foundation.URL {
 #if swift(>=5.7)
-        let sum = try checksum(forBinaryArtifactAt: AbsolutePath(file.path))
+        let sum = try checksum(forBinaryArtifactAt: AbsolutePath(validating: file.path))
 #elseif swift(>=5.6)
         let sum = try self.package.workspace.checksum(forBinaryArtifactAt: AbsolutePath(file.path))
 #else

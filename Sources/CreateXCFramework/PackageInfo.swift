@@ -84,7 +84,7 @@ struct PackageInfo {
         self.rootDirectory = Foundation.URL(fileURLWithPath: options.packagePath, isDirectory: true).absoluteURL
         self.buildDirectory = self.rootDirectory.appendingPathComponent(options.buildPath, isDirectory: true).absoluteURL
 
-        let root = AbsolutePath(self.rootDirectory.path)
+        let root = try AbsolutePath(validating: self.rootDirectory.path)
 
         self.toolchain = try UserToolchain(destination: try .hostDestination())
 
@@ -250,13 +250,6 @@ struct PackageInfo {
             .flatMap { $0 }
 
         return target
-    }
-
-
-    // MARK: - Helpers
-
-    private var absoluteRootDirectory: AbsolutePath {
-        AbsolutePath(self.rootDirectory.path)
     }
 
 }
