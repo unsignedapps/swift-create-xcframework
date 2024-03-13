@@ -13,6 +13,7 @@
 #if swift(>=5.9)
 
 import Basics
+import Foundation
 import TSCBasic
 import PackageGraph
 import PackageModel
@@ -429,7 +430,7 @@ public func xcodeProject(
 
         // Assign the deployment target if the package is using the newer manifest version.
         if package.manifest.toolsVersion >= .v5 {
-            for supportedPlatform in target.platforms.derived {
+            for supportedPlatform in target.platforms.declared {
                 let version = supportedPlatform.version.versionString
                 switch supportedPlatform.platform {
                 case .macOS:
@@ -568,6 +569,19 @@ public func xcodeProject(
 
             // Also add the source file to the compile phase.
             compilePhase.addBuildFile(fileRef: srcFileRef)
+        }
+
+        let rootPath = target.sources.root
+        let enumerator = FileManager.default.enumerator(atPath: rootPath.pathString)
+        if let paths = (enumerator?.allObjects as? [String])?.filter({ $0.hasSuffix(".xcdatamodeld") }) {
+            paths.forEach { path in
+                guard let absPath = URL(string: "\(rootPath)/\(path)") else { return }
+                guard let group = try? makeGroup(
+                    for: .init(validating: absPath.deletingLastPathComponent().absoluteString)
+                ) else { return }
+                let fileReference = group.addFileReference(path: absPath.lastPathComponent)
+                compilePhase.addBuildFile(fileRef: fileReference)
+            }
         }
 
         // Set C/C++ language standard.
